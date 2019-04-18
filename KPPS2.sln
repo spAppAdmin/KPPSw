@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KPPSReportProcessing", "KPPSReportProcessing\KPPSReportProcessing.csproj", "{F20B9DF4-6660-496F-B784-BCA3B2BA225D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{A4117434-BBC1-448F-AB20-644B418C7E2F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F20B9DF4-6660-496F-B784-BCA3B2BA225D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F20B9DF4-6660-496F-B784-BCA3B2BA225D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F20B9DF4-6660-496F-B784-BCA3B2BA225D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4117434-BBC1-448F-AB20-644B418C7E2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4117434-BBC1-448F-AB20-644B418C7E2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4117434-BBC1-448F-AB20-644B418C7E2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4117434-BBC1-448F-AB20-644B418C7E2F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
