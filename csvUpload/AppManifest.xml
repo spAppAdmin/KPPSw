@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--Created:cb85b80c-f585-40ff-8bfc-12ff4d0e34a9-->
+<App xmlns="http://schemas.microsoft.com/sharepoint/2012/app/manifest"
+     Name="CSVUploader"
+     ProductID="{52b69efa-2516-435a-8fd2-55b51c06dec6}"
+     Version="1.2.2.2"
+     SharePointMinVersion="16.0.0.0"
+>
+  <Properties>
+    <Title>CSVUploader</Title>
+    <StartPage>~remoteAppUrl/Pages/upload.aspx?{StandardTokens}&amp;SPHostTitle={HostTitle}</StartPage>
+  </Properties>
+
+  <AppPrincipal>
+    <RemoteWebApplication ClientId="*" />
+  </AppPrincipal>
+  <AppPermissionRequests>
+    <AppPermissionRequest Scope="http://sharepoint/content/sitecollection/web" Right="FullControl" />
+    <AppPermissionRequest Scope="http://sharepoint/content/sitecollection/web/list" Right="Manage" />
+    <AppPermissionRequest Scope="http://sharepoint/content/sitecollection" Right="Manage" />
+  </AppPermissionRequests>
+</App>
