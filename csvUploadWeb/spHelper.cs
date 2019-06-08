@@ -327,7 +327,7 @@ namespace csvUploadWeb
         public static string cUserID = "</UserID>";
         public static string cXML = "</XML>";
         public static string cValues = "</Values>";
-        public static string cViewFields = "</ViewFields>";
+        public static string cViewFields = "</ViewFields>"; 
         public static string cView = "</View>";
 
         // These have basic static class "Opening" versions

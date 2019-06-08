@@ -10,6 +10,9 @@ using CsvHelper.Configuration;
 namespace ImportListFromCSV
 {
 
+
+
+
     public class ITLRecord
     {
 
@@ -88,56 +91,53 @@ namespace ImportListFromCSV
         }
     }
 
-
-
-
     public class CsvRecord
     {
         public string Project { get; set; }
-
-        public string Description { get; set; }
+        public string NamesColumnData { get; set; }
+    public string Description { get; set; }
         public string Status { get; set; }
-        public decimal Original_x0020_Contract { get; set; }
-        public decimal BIX_x0020__x002f__x0020_CIX { get; set; }
-        public decimal Total_x0020_Scope_x0020_Changes { get; set; }
-        public decimal Contract_x0020_Growth_x0020__x00 { get; set; }
-        public decimal Proceeding_x0020_Scope_x0020_Cha { get; set; }
-        public decimal _x0025__x0020_of_x0020_COs_x0020 { get; set; }
-        public decimal Total_x0020_Contract_x0020_Amoun { get; set; }
+        public int? Original_x0020_Contract { get; set; }
+        public int? BIX_x0020__x002f__x0020_CIX { get; set; }
+        public int? Total_x0020_Scope_x0020_Changes { get; set; }
+        public int? Contract_x0020_Growth_x0020__x00 { get; set; }
+        public int? Proceeding_x0020_Scope_x0020_Cha { get; set; }
+        public int? _x0025__x0020_of_x0020_COs_x0020 { get; set; }
+        public int? Total_x0020_Contract_x0020_Amoun { get; set; }
         public string Project_x0020_Manager { get; set; }
         public string Operations_x0020_Manager { get; set; }
         public string Client { get; set; }
-        public decimal Total_x0020_Billings { get; set; }
-        public decimal Open_x0020_Commitments_x0020_ { get; set; }
-        public decimal JTD_x0020_Cost_x0020_ { get; set; }
-        //public decimal Paid_x0020_to_x0020_Supp_x002e__ { get; set; }
-        //public decimal Received_x0020_from_x0020_Cust_x { get; set; }
-        public decimal JTD_x0020__x0025__x0020_Complete { get; set; }
-        public decimal JTD_x002b_OpenCmt_x0020__x0025__ { get; set; }
-        public decimal Cash_x0020_Position { get; set; }
-        public decimal Collections_x0020_past_x0020_due { get; set; }
+        public int? Total_x0020_Billings { get; set; }
+        public int? Open_x0020_Commitments_x0020_ { get; set; }
+        public int? JTD_x0020_Cost_x0020_ { get; set; }
+        //public int? Paid_x0020_to_x0020_Supp_x002e__ { get; set; }
+        //public int? Received_x0020_from_x0020_Cust_x { get; set; }
+        public int? JTD_x0020__x0025__x0020_Complete { get; set; }
+        public int? JTD_x002b_OpenCmt_x0020__x0025__ { get; set; }
+        public int? Cash_x0020_Position { get; set; }
+        public int? Collections_x0020_past_x0020_due { get; set; }
         //public DateTime L_x002e_Invoice_x0020_to_x0020_C { get; set; }
-        public decimal PM_x0020_Fcst_x0020_Cost { get; set; }
+        public int? PM_x0020_Fcst_x0020_Cost { get; set; }
         //public DateTime Start_x0020_Time { get; set; }
         //public DateTime FiniTime { get; set; }
-        public decimal Original_x0020_Margin { get; set; }
-        public decimal PM_x0027_s_x0020_Margin { get; set; }
-        public decimal Budget_x0020_LABOR_x0020_Cost { get; set; }
-        public decimal ACTUAL_x0020_LABOR_x0020_Cost { get; set; }
-        public decimal LABOR_x0020__x0025__x0020_Spent { get; set; }
-        public decimal Budget_x0020_MAT_x0026_EQMNT_x00 { get; set; }
-        public decimal ACTUAL_x0020_MAT_x0026_EQMNT_x00 { get; set; }
-        public decimal MAT_x0020__x0025__x0020_Spent { get; set; }
-        public decimal Budget_x0020_GCs_x0020_Cost { get; set; }
-        public decimal ACTUAL_x0020_GCs_x0020_Cost { get; set; }
-        public decimal GC_x0027_s_x0020__x0025__x0020_S { get; set; }
-        public decimal Budget_x0020_SUBs_x0020_Cost { get; set; }
-        public decimal ACTUAL_x0020_SUBs_x0020_Cost { get; set; }
-        public decimal SUBs_x0020__x0025__x0020_Spent { get; set; }
+        public int? Original_x0020_Margin { get; set; }
+        public int? PM_x0027_s_x0020_Margin { get; set; }
+        public int? Budget_x0020_LABOR_x0020_Cost { get; set; }
+        public int? ACTUAL_x0020_LABOR_x0020_Cost { get; set; }
+        public int? LABOR_x0020__x0025__x0020_Spent { get; set; }
+        public int? Budget_x0020_MAT_x0026_EQMNT_x00 { get; set; }
+        public int? ACTUAL_x0020_MAT_x0026_EQMNT_x00 { get; set; }
+        public int? MAT_x0020__x0025__x0020_Spent { get; set; }
+        public int? Budget_x0020_GCs_x0020_Cost { get; set; }
+        public int? ACTUAL_x0020_GCs_x0020_Cost { get; set; }
+        public int? GC_x0027_s_x0020__x0025__x0020_S { get; set; }
+        public int? Budget_x0020_SUBs_x0020_Cost { get; set; }
+        public int? ACTUAL_x0020_SUBs_x0020_Cost { get; set; }
+        public int? SUBs_x0020__x0025__x0020_Spent { get; set; }
         public string Category { get; set; }
-        public decimal Collections_x0020_due { get; set; }
-        public decimal Original_x0020_BUDGET_x0020_Cost { get; set; }
-        public decimal Total_x0020_BUDGET_x0020_Cost { get; set; }
+        public int? Collections_x0020_due { get; set; }
+        public int? Original_x0020_BUDGET_x0020_Cost { get; set; }
+        public int? Total_x0020_BUDGET_x0020_Cost { get; set; }
 
     }
 
@@ -145,6 +145,7 @@ namespace ImportListFromCSV
     {
         public ProjectKPIMap()
         {
+
             Map(m => m.Project).Name("Project");
             Map(m => m.Description).Name("Description");
             Map(m => m.Status).Name("Status");

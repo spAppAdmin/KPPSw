@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+  <CustomAction Id="dc2bd1cc-ace7-4fdf-a687-85fb820f7f2d.RibbonCSVLink"
+                RegistrationType="List"
+                RegistrationId="101"
+                Location="CommandUI.Ribbon"
+                Sequence="10001"
+                Title="Invoke &apos;RibbonCSVLink&apos; action">
+    <CommandUIExtension>
+      <!-- 
+      Update the UI definitions below with the controls and the command actions
+      that you want to enable for the custom action.
+      -->
+      <CommandUIDefinitions>
+        <CommandUIDefinition Location="Ribbon.List.Actions.Controls._children">
+          <Button Id="Ribbon.List.Actions.RibbonCSVLinkButton"
+                  Alt="CSV"
+                  Sequence="100"
+                  Command="Invoke_RibbonCSVLinkButtonRequest"
+                  LabelText="CSV"
+                  TemplateAlias="o1"
+          Image32by32="https://sharepointinterface.files.wordpress.com/2013/01/sharepoint-library-analyzer_32x32-a.png"
+          Image16by16="https://sharepointinterface.files.wordpress.com/2013/01/sharepoint-library-analyzer_16x16-a.png"/>
+
+
+        </CommandUIDefinition>
+      </CommandUIDefinitions>
+      <CommandUIHandlers>
+        <CommandUIHandler Command="Invoke_RibbonCSVLinkButtonRequest"
+                          CommandAction="~remoteAppUrl/Pages/upload.aspx?{StandardTokens}&amp;SPListItemId={SelectedItemId}&amp;SPListId={SelectedListId}"/>
+      </CommandUIHandlers>
+    </CommandUIExtension >
+  </CustomAction>
+</Elements>

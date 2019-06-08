@@ -1,5 +1,6 @@
 using Microsoft.IdentityModel.S2S.Protocols.OAuth2;
 using Microsoft.IdentityModel.Tokens;
+using tk=Microsoft.IdentityModel.Tokens;
 using Microsoft.SharePoint.Client;
 using System;
 using System.Net;
@@ -330,7 +331,7 @@ namespace csvUploadWeb
                     return RedirectionStatus.Ok;
                 }
             }
-            catch (SecurityTokenExpiredException)
+            catch (Exception ex)
             {
                 contextTokenExpired = true;
             }

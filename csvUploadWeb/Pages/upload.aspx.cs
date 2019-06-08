@@ -1,4 +1,4 @@
-﻿    using System;
+﻿using System;
 using System.IO;
 using fs = System.IO;
 using System.Collections.Generic;
@@ -21,13 +21,16 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using System.Reflection;
 using System.Linq.Expressions;
+using System.Net;
+
+
+
+
 
 namespace csvUploadWeb.Pages
 {
     public partial class upload : System.Web.UI.Page
     {
-
-
         protected void Page_PreInit(object sender, EventArgs e)
         {
             Uri redirectUrl;
@@ -47,27 +50,21 @@ namespace csvUploadWeb.Pages
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            //Page.ClientScript.RegisterClientScriptBlock(typeof(Default), "BasePageScript", script, true);
-            getProjectList();
-
+                  getProjectList();
+                 
         }
 
-        protected void Button1_Click1(object sender, EventArgs e)
-        {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
-            // Deploy to library
 
-            if (csvFile.Value == "")
-            {
-                msg.Text = "File Required";
-                return;
-            }
 
+        protected void Button1_Click(object sender, EventArgs e)
+        {
             var spContext = SharePointContextProvider.Current.GetSharePointContext(Context);
             var ctx = spContext.CreateUserClientContextForSPHost();
 
             var projectURL = txtProjURL.Text;
             var file = csvFile.Value.ToString();
             var listName = ddTargetList.SelectedValue;
+            var action = rbAction.SelectedValue;
              var lib = "CSV Uploads";
 
             var path = Path.Combine("@", file);
@@ -76,60 +73,76 @@ namespace csvUploadWeb.Pages
             string filepath = Path.GetFullPath(file);
             string fileExt = Path.GetExtension(file);
 
-            //List list = ctx.Web.Lists.GetByTitle(lib);
 
-            //var q = new CamlQuery();
-            //q.ViewXml = string.Format("@<View><Query><Where><Eq><FieldRef Name=\"Title\" /><Value Type=\"Text\">{0}</Value></Eq></Where></Query><ViewFields><FieldRef FileRef/></ViewFields><QueryOptions /></View>", fileNameWoExt);
-            //sp.ListItemCollection listItems = list.GetItems(q);
-            //ctx.Load(listItems, items => items.Include (listItem => listItem["ID"], listItem => listItem["FileRef"]));
-            //ctx.ExecuteQuery();
-            //if (listItems != null){
-            //sp.ListItem item = listItems[0];
-            //}
-
-            //string absoluteUrl ="";
-
-            //foreach (sp.ListItem item in listItems) {
-            //var serverRelativeUrl = item["FileRef"];
-            //absoluteUrl = new Uri(ctx.Url).GetLeftPart(UriPartial.Authority) + serverRelativeUrl;
-            //}
-
-            //  var q = new CamlQuery() { ViewXml = "<View><Query><Where><Eq><FieldRef Name='Title' /><Value Type='Text'>ITL</Value></Eq></Where></Query><ViewFields><FieldRef Name='Project' /><FieldRef Name='Project' /><FieldRef FileRef/><FieldRef Name='Title' /></ViewFields><QueryOptions /></View>" };
-            //string csvPath = @"\\kineticsys.sharepoint.com\sites\projects\construction\SPP\000000000\CSV Uploads\ITL.csv";
             try {
-                string csvPath = @"C:\temp\ITL.csv";
+                string csvPath = @file;
                 Uri projSiteUrl = new Uri(projectURL);
                 var tList = listName;
                 var lookup = "CostCodeList";
-                var append = "no";
-                string lookupFieldName = "AreaName_x002b_SubTask";
+                 string lookupFieldName = "AreaName_x002b_SubTask";
                 string lookupFieldType = "Calculated";
 
-                UploadITLCSV(csvPath, projSiteUrl, append, tList, fileNamewExt, lookup, lookupFieldName, lookupFieldType);
+                //throw new Exception("EXC");
 
-                //string[] hdr = getCSVHeaders(csvPath);
-                //ClientContext ct = getProjectSpCtx(projSiteUrl);
-                //var dic = getListData(ct);
+                Int32 recordCount = ActionAddNewListItems(csvPath, projSiteUrl, action, tList, fileNamewExt, lookup, lookupFieldName, lookupFieldType);
+                
+               ScriptManager.RegisterStartupScript(UpdatePanel, UpdatePanel.GetType()  , "Alert", "alert('Records Loaded'" + recordCount + ")", true);
+
+                ScriptManager.RegisterStartupScript(UpdatePanel, UpdatePanel.GetType(), "KK", "alert('done')", true);
+
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                sb.Append(@"<script language='javascript'>");
+                sb.Append(@"var lbl = document.getElementById('msgHtml');");
+                sb.Append(@"lbl.color='red';");
+                sb.Append(@"</script>");
+                             
 
 
-                //var dic = hdr.ToDictionary(Item=>Item, GetByInternalNameOrTitle())
-                //Dictionary<string, object> itemFieldValues = new Dictionary<string, object>();
-                // Field matchingField = spList.Fields.GetByInternalNameOrTitle(property.Name);
-                //        clientContext.Load(matchingField);
-                //        clientContext.ExecuteQuery();
 
-                //Field matchingField = spList.Fields.GetByInternalNameOrTitle(property.Name);
+            } catch (Exception ex) {
+                ScriptManager.RegisterStartupScript(UpdatePanel, UpdatePanel.GetType(), "KK", "alert('Exception')", true);
+                ScriptManager.RegisterStartupScript(UpdatePanel, UpdatePanel.GetType(), "alert", "alert('xxx')", true);
+                ScriptManager.RegisterClientScriptBlock(msg, this.GetType(), "AlertMsg", "<script language='javascript'>var e = document.getElementById('msg');e.text=" + ex.Message + "</script>", false);
+                Console.WriteLine(ex.Message);
+                SPL.LogEntries.Add("Event => ErrorMessage: " + ex.Message + " ErrorSource: " + ex.Source);
+                this.Page.ClientScript.RegisterStartupScript(this.GetType(), "ex", "alert('" + ex.Message + "');", true);
 
-
-                //System.Threading.Thread.Sleep(9000);
-            } catch (Exception ex) { 
-            SPL.LogEntries.Add("Event => ErrorMessage: " + ex.Message + " ErrorSource: " + ex.Source);
             }
-
-
 
         }
 
+        private void HideError()
+        {
+            ScriptManager.RegisterStartupScript(Page, GetType(), "HideErrorMessageScript", HideErrorMessageScript(), true);
+        }
+
+        private void ShowError(string errorMessage)
+        {
+            ScriptManager.RegisterStartupScript(Page, GetType(), "ErrorMessageScript", ErrorMessageScript(errorMessage), true);
+        }
+        
+        private static string HideErrorMessageScript()
+        {
+            return @"
+$(document).ready(function() {
+    $('#errorMessagePlaceHolder').hide();
+});
+";
+        }
+
+        private static string ErrorMessageScript(string errorMessage)
+        {
+            return
+                string.Format(
+                    @"
+$(document).ready(function() {{
+    $('#errorMessagePlaceHolder').html('{0}');
+    $('#errorMessagePlaceHolder').show();
+}});
+",
+                    errorMessage);
+        }
+               
         public void getProjectList()
         {
             //ADD-IN CONTEXT
@@ -182,40 +195,85 @@ namespace csvUploadWeb.Pages
             return ctx;
         }
 
-        public static void uploadFixle(string siteUrl, string filePath, string fileName, string docLibName)
-        {
-            siteUrl = siteUrl.EndsWith("/") ? siteUrl.Substring(0, siteUrl.Length - 1) : siteUrl;
-            ClientContext context = new ClientContext(siteUrl);
-            List docLib = context.Web.Lists.GetByTitle(docLibName);
-            context.Load(docLib);
-            context.ExecuteQuery();
+                             
 
-            Byte[] bytes = System.IO.File.ReadAllBytes(filePath + fileName);
-
-            FileCreationInformation createFile = new FileCreationInformation();
-
-            createFile.Content = bytes;
-            createFile.Url = siteUrl + "/" + docLibName + "/" + fileName;
-            createFile.Overwrite = true;
-            Microsoft.SharePoint.Client.File newFile = docLib.RootFolder.Files.Add(createFile);
-            newFile.ListItemAllFields.Update();
-            context.ExecuteQuery();
+        public static Int32 ActionDeleteAllListItems(List spList,ClientContext ctx) {
+            Int32 recordCount = 0;
+            recordCount = DeleteAllListItems(spList, ctx);
+            return recordCount;
         }
 
-        public static void UploadITLCSV(string csvPath, Uri projSiteURI, string append, string listName, string fileName, string lookup, string lookupFieldName, string lookupFieldType)
+        public static Int32 ActionDeleteCSVListItems(List spList, ClientContext ctx)
+        {
+            Int32 recordCount = 0;
+            recordCount = DeleteAllListItems(spList, ctx);
+            return recordCount;
+        }
+
+        //Update records from CSV
+        public static void ActionUpdateListItems(string csvPath, Uri projSiteURI, string action, string listName, string fileName, string lookup, string lookupFieldName, string lookupFieldType)
         {
             try
             {
                 ClientContext ctx = getProjectSpCtx(projSiteURI);
+                Int32 recordCount = 0;
+                if (ctx != null)
+                {
+                List<ITLRecord> records = GetRecordsFromITLCsv(csvPath);
+                    List spList = ctx.Web.Lists.GetByTitle(listName);
+
+                    //Checks to see if an item already exists , deletes and re-adds
+
+                    foreach (ITLRecord record in records)
+                    {
+                        CamlQuery query = new CamlQuery();
+                        query.ViewXml = String.Format("@<View><Query><Where><Eq><FieldRef Name=\"Title\" /><Value Type=\"Text\">{0}</Value></Eq></Where></Query></View>", record.Title);
+                        sp.ListItemCollection existingMappings = spList.GetItems(query);
+                        ctx.Load(existingMappings);
+                        ctx.ExecuteQuery();
+                    
+                    var totalListItems = existingMappings.Count;
+
+                        if (totalListItems > 0)
+                        {
+                            for (var counter = totalListItems - 1; counter > -1; counter--)
+                            {
+                                //Delete record identified by CSV file so new one can be added
+                                existingMappings[counter].DeleteObject();
+                                ctx.ExecuteQuery();
+                        }
+                            AddNewListItem(record, spList, ctx, lookup, lookupFieldName, lookupFieldType);
+                            
+                        }
+                    }
+                }
+            }catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+
+            }
+        }
+
+
+        //Add only new list items in CSV
+        public static Int32 ActionAddNewListItems(string csvPath, Uri projSiteURI, string action, string listName, string fileName, string lookup, string lookupFieldName, string lookupFieldType)
+        {
+            try
+            {
+                ClientContext ctx = getProjectSpCtx(projSiteURI);
+
+                Int32 recordCount = 0;
+
                 if (ctx != null)
                 {
                     List<ITLRecord> records = GetRecordsFromITLCsv(csvPath);
                     List spList = ctx.Web.Lists.GetByTitle(listName);
 
-                    //if (append == "no")
-                    //{
-                    DeleteListItem(spList, ctx);
-                    //}
+
+                    //Checks to see if an item already exists with the same title and preserves
 
                     foreach (ITLRecord record in records)
                     {
@@ -224,6 +282,8 @@ namespace csvUploadWeb.Pages
                         var existingMappings = spList.GetItems(query);
                         ctx.Load(existingMappings);
                         ctx.ExecuteQuery();
+
+                        recordCount = existingMappings.Count;
 
                         switch (existingMappings.Count)
                         {
@@ -238,26 +298,25 @@ namespace csvUploadWeb.Pages
                     }
 
                 }
+                return recordCount;
             }
             catch (Exception ex)
             {
                 throw ex;
-                
-           }
+            }
             finally
             {
-                Console.WriteLine("Control flow reaches finally");
-                Console.ReadLine();
-
-
-
+                
             }
         }
-   
 
-        public static void DeleteListItem(List spList, ClientContext ctx)
-        {
 
+
+
+
+
+        public static Int32 DeleteAllListItems(List spList, ClientContext ctx) {
+            Int32 rtnRecord = 0;
             sp.ListItemCollection listItems = spList.GetItems(CamlQuery.CreateAllItemsQuery());
             ctx.Load(listItems, eachItem => eachItem.Include(item => item, item => item["ID"]));
             ctx.ExecuteQuery();
@@ -268,12 +327,13 @@ namespace csvUploadWeb.Pages
                 {
                     listItems[counter].DeleteObject();
                     ctx.ExecuteQuery();
-                    Console.WriteLine("Row: " + counter + " Item Deleted");
+                    rtnRecord = counter;
                 }
             }
+            return rtnRecord;
         }
 
-        public static void AddNewListItem(ITLRecord record, List spList, ClientContext clientContext, string LookupList, string lookupFieldName, string lookupFieldType)
+         public static void AddNewListItem(ITLRecord record, List spList, ClientContext clientContext, string LookupList, string lookupFieldName, string lookupFieldType)
         {
             try
             {
@@ -318,7 +378,6 @@ namespace csvUploadWeb.Pages
                         }
                     }
                 }
-
                 //Add new item to list
                 ListItemCreationInformation creationInfo = new ListItemCreationInformation();
                 sp.ListItem oListItem = spList.AddItem(creationInfo);
@@ -327,106 +386,48 @@ namespace csvUploadWeb.Pages
                 {
                     //Set each field value
                     oListItem[itemFieldValue.Key] = itemFieldValue.Value;
+                    
                 }
-                //Persist changes
                 oListItem.Update();
                 clientContext.ExecuteQuery();
-
             }
             catch (Exception ex)
             {
                 throw ex;
-                //Trace.TraceError("Failed: " + ex.Message);
-                //Trace.TraceError("Stack Trace: " + ex.StackTrace);
-                SPL.LogEntries.Add("Event => ErrorMessage: " + ex.Message + " ErrorSource: " + ex.Source);
             }
-        }
-
-
-        public static string[] getCSVHeaders(string csvPath)
-        {
-            string[] headerRow;
-
-            using (var reader = new StreamReader(csvPath))
-            {
-                var csv = new CsvReader(reader);
-                csv.Read();
-                csv.ReadHeader();
-                headerRow = csv.Context.HeaderRecord;
-            }
-            return headerRow;
-        }
-
-
-
-        private Dictionary<string, Dictionary<string, object>> getListData(ClientContext ctx)
-        {
-            //Log.LogMessage("Fetching {0}{1}", ctx.Url, ListName);
-            
-            var list = ctx.Web.Lists.GetByTitle("ITL");
-
-
-            // fetch the fields from this list
-            FieldCollection fields = list.Fields;
-            ctx.Load(fields);
-            ctx.ExecuteQuery();
-
-            // dynamically build a list of fields to get from this list
-            var columns = new List<string> { "ID" }; // always include the ID field
-            foreach (var f in fields)
-            {
-                // Log.LogMessage( "\t\t{0}: {1} of type {2}", f.Title, f.InternalName, f.FieldTypeKind );
-                if (f.InternalName.StartsWith("_") || f.InternalName.StartsWith("ows")) continue;  // skip these
-                if (f.FieldTypeKind == FieldType.Text) // get Text fields only... but you can get other types too by uncommenting below
-                                                       // || f.FieldTypeKind == FieldType.Counter
-                                                       // || f.FieldTypeKind == FieldType.User
-                                                       // || f.FieldTypeKind == FieldType.Integer
-                                                       // || f.FieldTypeKind == FieldType.Number
-                                                       // || f.FieldTypeKind == FieldType.DateTime
-                                                       // || f.FieldTypeKind == FieldType.Lookup
-                                                       // || f.FieldTypeKind == FieldType.Computed
-                                                       // || f.FieldTypeKind == FieldType.Boolean )
-                {
-                    columns.Add(f.InternalName);
-                }
-            }
-
-            // build the include expression of which fields to fetch
-            List<Expression<Func<sp.ListItemCollection, object>>> allIncludes = new List<Expression<Func<sp.ListItemCollection, object>>>();
-            foreach (var c in columns)
-            {
-                // Log.LogMessage( "Fetching column {0}", c );
-                allIncludes.Add(items => items.Include(item => item[c]));
-            }
-
-            // get all the items in the list with the fields
-            sp.ListItemCollection listItems = list.GetItems(CamlQuery.CreateAllItemsQuery());
-            ctx.Load(listItems, allIncludes.ToArray());
-
-            ctx.ExecuteQuery();
-
-            var sd = listItems.ToDictionary(k => k["Title"] as string, v => v.FieldValues);   // FieldValues is a Dictionary<string,object>
-
-            // show the fields
-         
-
-            return sd;
         }
 
 
         public static List<ITLRecord> GetRecordsFromITLCsv(string csvPath)
         {
-            List<ITLRecord> records = new List<ITLRecord>();
-            using (var sr = new StreamReader(csvPath))
+            try
             {
-                using (var csvReader = new CsvReader(sr))
+                List<ITLRecord> records = new List<ITLRecord>();
+                using (var sr = new StreamReader(csvPath))
                 {
-                    csvReader.Configuration.TrimOptions = TrimOptions.Trim;
-                    csvReader.Configuration.RegisterClassMap<ProjectITLMap>();
-                    records = csvReader.GetRecords<ITLRecord>().ToList();
+                    var parser = new CsvReader(sr, new CsvHelper.Configuration.Configuration
+                    {
+                        HasHeaderRecord = true,
+                        HeaderValidated = null,
+                        MissingFieldFound = null
+                    });
+
+                    using (parser)
+                    {
+                        //csvReader.Configuration.HeaderValidated(false);
+                        parser.Configuration.TrimOptions = TrimOptions.Trim;
+                        parser.Configuration.RegisterClassMap<ProjectITLMap>();
+                        records = parser.GetRecords<ITLRecord>().ToList();
+                    }
                 }
+            
+                return records;
             }
-            return records;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
         }
 
         public static FieldUserValue GetUserFieldValue(string userName, ClientContext clientContext)
@@ -507,6 +508,8 @@ namespace csvUploadWeb.Pages
             //web.Lists.Add(listInfo);
             ctx.ExecuteQuery();
         }
+
+      
     }
 
 
@@ -536,6 +539,7 @@ namespace csvUploadWeb.Pages
 
         }
 
+
         public void LogWrite(string logMessage)
         {
             this.m_exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -545,11 +549,24 @@ namespace csvUploadWeb.Pages
                 {
                     this.Log(logMessage, streamWriter);
                 }
+                msg m = new msg();
+                m._msg = "X";
+                
             }
             catch (Exception exception)
             {
             }
         }
+
+
+        public class msg 
+        {
+            public string _msg { get; set; }
+        }
+
+
+
+
     }
 
 }

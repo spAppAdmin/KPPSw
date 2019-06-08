@@ -1,5 +1,7 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="upload.aspx.cs"  Inherits="csvUploadWeb.Pages.upload" %>
 
+<%@ Register assembly="AjaxControlToolkit" namespace="AjaxControlToolkit" tagprefix="ajaxToolkit" %>
+
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -8,16 +10,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>  
     <script type="text/javascript" src="//ajax.aspnetcdn.com/ajax/4.0/1/MicrosoftAjax.js"></script>
+<script type="text/javascript" src="/_layouts/15/sp.js"></script>
     <script src="../Scripts/app.js"></script>
-    <link href="../Scripts/jquery-asProgress-master/dist/css/asProgress.css" rel="stylesheet" />
-    <link href="../Scripts/jquery-asProgress-master/examples/css/normalize.css" rel="stylesheet" />
-    <script src="../Scripts/jquery-asProgress-master/dist/jquery-asProgress.js"></script>
     <link href="../Scripts/app.css" rel="stylesheet" />
     
-    <script>
- 
-  </script>
-    
+     <script type="text/javascript" language="javascript">
+
+
+      $(document).ready(function() {  
+      //  SP.SOD.executeFunc('sp.js', 'SP.ClientContext', showModalPopUp);  
+    });  
+
+    function showModalPopUp() {  
+        //Set options for Modal PopUp  
+        var options = {  
+            url: 'upload.aspx?IsDlg=1', //Set the url of the page  
+            title: 'SharePoint Modal Pop Up', //Set the title for the pop up  
+            allowMaximize: false,  
+            showClose: true,  
+            width: 600,  
+            height: 400  
+        };  
+        //Invoke the modal dialog by passing in the options array variable  
+        SP.SOD.execute('sp.ui.dialog.js', 'SP.UI.ModalDialog.showModalDialog', options);  
+        return false;  
+    }  
+        </script>
+
+
+
+
     <script type="text/javascript">
     var hostweburl;
 
@@ -25,9 +47,7 @@
     $(document).ready(function () {
 
         // Get the URI decoded add-in web URL.
-        hostweburl =
-            decodeURIComponent(getQueryStringParameter("SPHostUrl")
-        );
+        hostweburl =    decodeURIComponent(getQueryStringParameter("SPHostUrl") );
 
         // The SharePoint js files URL are in the form:
         // web_url/_layouts/15/resource.js
@@ -35,8 +55,7 @@
 
         // Load the js file and continue to the 
         // success handler.
-        $.getScript(scriptbase + "SP.UI.Controls.js")
-    });
+        $.getScript(scriptbase + "SP.UI.Controls.js") });
 
     // Function to retrieve a query string value.
     function getQueryStringParameter(paramToRetrieve) {
@@ -50,10 +69,8 @@
         }
     }
 </script>
-
-
-        
- </head>
+    
+    </head>
 
     <body>
       <form id="frm" runat="server">
@@ -79,112 +96,90 @@
                      }'>
             </div>
 
-
-
-<asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
-
-<asp:UpdateProgress ID="updProgress" AssociatedUpdatePanelID="UpdatePanel1" runat="server"  > 
-    <ProgressTemplate>       
-        <img alt="progress" src="../images/loader1.gif" width="" height="100" style="position:absolute; right:400px; top:400px;"/>
-    </ProgressTemplate>
-</asp:UpdateProgress>
-       
-<asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Always" ClientIDMode="AutoID"  ValidateRequestMode="Enabled">
-<ContentTemplate>
-    <asp:Label ID="lblText" runat="server" Text=""></asp:Label>
-    <br />
-
-    <asp:Button ID="Button1" runat="server" Text="Upload File" OnClick="Button1_Click1" />
+<div>
 
     
-    <asp:Label ID="msg" runat="server" Text="" ForeColor="red"></asp:Label>
 
 
-    <table id="frmtbl" style="font-family: Calibri; font-size: medium; font-weight: normal; color: #3366CC; table-layout: auto; margin-top: 10px; border-collapse: collapse; border-spacing: 1px; empty-cells: show">
+
+
+    <asp:ScriptManager ID="ScriptManager1" runat="server"  ></asp:ScriptManager>
+    
+    <div id="msgHtml"></div>
+    
+
+
+<asp:UpdateProgress ID="updProgress" AssociatedUpdatePanelID="UpdatePanel" runat="server"  > 
+        <ProgressTemplate>       
+                 <img src="../Images/progress.gif" id="progress2"  runat="server" />
+        </ProgressTemplate>
+    </asp:UpdateProgress>
+  
+    <asp:UpdatePanel ID="UpdatePanel" runat="server">
+        <ContentTemplate>
+            <asp:Button ID="Button1_Click1" runat="server" Text="Process CSV" OnClick="Button1_Click" CssClass="btnProcess"/>
+            <asp:Label ID="msg" runat="server" Text="xxx"></asp:Label>
+        </ContentTemplate>
+    </asp:UpdatePanel>         
+</div>
+
+<div>
+
+
+
+<asp:UpdatePanel id="ErrorUpdatePanel" runat="server" UpdateMode="Conditional">
+
+</asp:UpdatePanel>
+</div>
+
+        
+
+          
+    <!--
+        <ajaxToolkit:TabContainer ID="TabContainer1" runat="server" ActiveTabIndex="0" >
+        <ajaxToolkit:TabPanel ID="TabPanel1" HeaderText="TabPanel1" runat="server">
+            <ContentTemplate>T1</ContentTemplate>
+        </ajaxToolkit:TabPanel>
+        <ajaxToolkit:TabPanel ID="TabPanel2" runat="server" HeaderText="TabPanel2">
+         <ContentTemplate>T2</ContentTemplate>
+        </ajaxToolkit:TabPanel>
+        <ajaxToolkit:TabPanel ID="TabPanel3" runat="server" HeaderText="TabPanel3">
+            <ContentTemplate>T3</ContentTemplate>
+        </ajaxToolkit:TabPanel>
+    </ajaxToolkit:TabContainer>
+    -->
+
+
+<div>
+
+    <table id="frmtbl">
         <tr>
-        <td>File Path (must be CSV)<span style="color:red;">*</span></td>
-        <td><input type="text" id="csvFile" runat="server" value="C:\temp\ITL.csv" /></td></tr>
-        <tr><td>Target List<span style="color:red;">*</span></td><td>
-            <asp:RadioButtonList ID="ddTargetList" runat="server">
+            <td>File Path (must be CSV)<span style="color:red;">*</span></td>
+            <td><input type="text" id="csvFile" runat="server" value="C:\temp\ITL.csv" /></td>
+        </tr>
+        <tr>
+            <td>Action</td>
+            <td>
+                <asp:RadioButtonList ID="rbAction" runat="server">
+                    <asp:ListItem Value="Delete" Text="Delete all list records" ></asp:ListItem>
+                    <asp:ListItem Value="Add" Text="Add only new records" ></asp:ListItem>
+                    <asp:ListItem Value="Update" Text="Update Records" ></asp:ListItem>
+                </asp:RadioButtonList>
+            <span><small>Selecting deletes records with matching titles and replaces with new record</small></span>
+            </td>
+        </tr>
+        <tr>
+        <td class="auto-style2">Target List<span style="color:red;">*</span></td><td>
+            <asp:RadioButtonList ID="ddTargetList" runat="server">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
                 <asp:ListItem Value="ITL" Selected="True"></asp:ListItem> 
             </asp:RadioButtonList>
             </td></tr>
-            <tr><td>Project:<span style="color:red;">*</span></td><td><asp:DropDownList ID="ddlProjName" runat="server" Width="600"></asp:DropDownList></td></tr>
-            <tr><td>Project Site:</td><td><asp:TextBox ID="txtProjURL"  runat="server"  Width="600"></asp:TextBox></td></tr>
-        c                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <tr><td>#Records:</td><td><asp:TextBox ID="txtRecords"  runat="server"></asp:TextBox></td></tr>
-            <tr><td>Last Run Date:</td><td><asp:TextBox ID="txtLastRun"  runat="server"></asp:TextBox></td></tr>
+            <tr><td class="auto-style2">Project:<span style="color:red;">*</span></td><td><asp:DropDownList ID="ddlProjName" runat="server" Width="600"></asp:DropDownList></td></tr>
+            <tr><td class="auto-style2">Project Site:</td><td><asp:TextBox ID="txtProjURL"  runat="server"  Width="600"></asp:TextBox></td></tr>
    </table>
 
-</ContentTemplate>
-</asp:UpdatePanel>        
+</div>
 
-
-<section>
-    <h2>Progress Bars</h2>
-    <section>
-      <div class="row">
-        <div class="example">
-          <h4>HTML</h4>
-          <pre><code data-language="html"></code></pre>
-        </div>
-        <div class="show">
-          <h4>RENDERED HTML</h4>
-          <div class="progress" role="progressbar" data-goal="30">
-            <div class="progress__bar" style="width: 30%"></div>
-          </div>
-          <div class="progress" role="progressbar" data-goal="-50" aria-valuemin="-100" aria-valuemax="0">
-            <div class="progress__bar"><span class="progress__label"></span></div>
-          </div>
-          <div class="progress" role="progressbar" data-goal="60" aria-valuemin="0" aria-valuemax="100">
-            <div class="progress__bar" style="width: 50%"></div>
-          </div>
-        </div>
-        <div>
-          <button id="button_start">start()</button>
-          <button id="button_stop">stop()</button>
-          <button id="button_go">go('50')</button>
-          <button id="button_go_percentage">go('50%')</button>
-          <button id="button_finish">finish()</button>
-          <button id="button_reset">reset()</button>
-        </div>
-      </div>
-    </section>
-  </section>
-
-          <script type="text/javascript">
-              jQuery(function ($) {
-
-
-                    $().asProgress('start');
-
-
-
-      $('.progress').asProgress({
-        'namespace': 'progress'
-      });
-
-        $().asProgress('start');
-        /*
-      $('#button_start').on('click', function() {
-        $('.progress').asProgress('start');
-      });
-      $('#button_finish').on('click', function() {
-        $('.progress').asProgress('finish');
-      });
-      $('#button_go').on('click', function() {
-        $('.progress').asProgress('go', 50);
-      });
-      $('#button_go_percentage').on('click', function() {
-        $('.progress').asProgress('go', '50%');
-      });
-      $('#button_stop').on('click', function() {
-        $('.progress').asProgress('stop');
-      });
-      $('#button_reset').on('click', function() {
-        $('.progress').asProgress('reset');
-      });*/
-    });
-  </script>
 
             
 </form> 

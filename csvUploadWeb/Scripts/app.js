@@ -1,30 +1,72 @@
 ﻿
-'use strict';
+
+
+// retrieve the appWebUrl and hostWebUrl from the querystring somewhere above here
+// you'll need them to retrieve the scripts and make the CSOM calls
+var scriptBase = hostweburl + "/_layouts/15/";
+$.getScript(scriptBase + "MicrosoftAjax.js").then(function (data) {
+    return $.getScript(scriptbase + "SP.Runtime.js");
+}).then(function (data) {
+    return $.getScript(scriptbase + "SP.js");
+}).then(function (data) {
+    $.getScript(scriptBase + "SP.RequestExecutor.js");
+}).then(function (data) {
+    var ctx = new SP.ClientContext(appWebUrl),
+        factory = new SP.ProxyWebRequestExecutorFactory(appWebUrl),
+        web;
+
+    ctx.set_webRequestExecutorFactory(factory);
+    web = ctx.get_web();
+    ctx.load(web);
+    ctx.executeQueryAsync(function () {
+        // log the name of the app web to the console
+        console.log(web.get_title());
+    }, function (sender, args) {
+        console.log("Error : " + args.get_message());
+    });
+});
+
+
+
 
 var appWebUrl, hostWebUrl;
 
 $(document).ready(function () {
 
-    
-
-
     $("#ddlProjName").change(function () {
-
-   
         var selectedProj = $(this).children("option:selected").val();
         $("#txtProjURL").val(selectedProj);
         $("#txtProjURL").attr('readonly', true);
         $("#txtProjURL").css("background-color", "#dddddd");
+    }); 
+
+    //$("#msgHtml").html("<table border=0><tr><td><img src='../Images/alert.png'/></td><td>" + " Project Site Required" + "</td></tr></table>");
+
+    $("#Button1_Click1").click(function () {
+
+        if ($("#txtProjURL").val().length === 0) {
+            
+            $("#msgHtml").html("<table border=0><tr><td><img src='../Images/alert.png'/></td><td>" + " Project Required" + "</td></tr></table>");
+            return false;
+        } else {
+            $("#msgHtml").html("");
+            return true;
+
+        }
     });
-
-
+            
 });
+
+
+
+
+
 
 
 var ItemContainer = { ItemList: [] };
 
 
-//------------------- Get Manufacturer Dropdown -------------------------------------------------------------
+//------------------- Get Project Catalog -------------------------------------------------------------
 
 function getProjCatalog(m) {
 
@@ -56,7 +98,7 @@ function onListDataLoadQuerySucceeded(sender, args) {
 function fillDropDown(ddl) {
     //var ddl = document.getElementById('ddlProjName');
     //alert(ddl);
-    if (ddl != null) {
+    if (ddl !== null) {
         for (var i = 0; i < ItemContainer.ItemList.length; i++) {
             var theOption = new Option;
             theOption.value = ItemContainer.ItemList[i].ID;
@@ -70,7 +112,7 @@ function fillDropDown(ddl) {
 function getParameterByName(name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"), results = regex.exec(location.search);
-    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
 

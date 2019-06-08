@@ -1,1 +1,0 @@
-﻿<%@ ServiceHost Language="C#" Debug="true" Service="csvUploadWeb.Services.CSVFileTypeEventReceiver" CodeBehind="CSVFileTypeEventReceiver.svc.cs" %>

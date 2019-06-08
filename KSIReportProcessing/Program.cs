@@ -36,63 +36,10 @@ namespace ImportListFromCSV
         static void Main(string[] args)
         {
             UploadKPICSV();
-
-
-        }
-
-
-        public static void UploadITLCSV(string csvPath,Uri projSiteURI,string append,string listName,string fileName,string lookup)
-        {   
-            try
-            {
-                ClientContext ctx = getProjectSpCtx(projSiteURI);
-                if (ctx != null)
-                {
-                    List<ITLRecord> records = GetRecordsFromITLCsv(csvPath);
-                    List spList = ctx.Web.Lists.GetByTitle(listName);
-
-                    if (append == "no") { 
-                        DeleteListItem(spList, ctx);
-                    }
-
-                    foreach (ITLRecord record in records)
-                    {
-                        CamlQuery query = new CamlQuery();
-                        query.ViewXml = String.Format("@<View><Query><Where><Eq><FieldRef Name=\"Title\" /><Value Type=\"Text\">{0}</Value></Eq></Where></Query></View>", record.Title);
-                        var existingMappings = spList.GetItems(query);
-                        ctx.Load(existingMappings);
-                        ctx.ExecuteQuery();
-
-                        switch (existingMappings.Count)
-                        {
-                            case 0:
-                                //No records found, needs to be added
-                                if (append == "no")
-                                {
-                                    AddNewListItem(record, spList, ctx,lookup);
-                                }
-                                break;
-                            default:
-                                //An existing record was found - continue with next item
-                                continue;
-                        }
-                    }
-
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("Failed: " + ex.Message);
-                Trace.TraceError("Stack Trace: " + ex.StackTrace);
-                
-
-            }
         }
 
 
         public static void UploadKPICSV() {
-
-            
 
             Uri siteUri = new Uri("https://kineticsys.sharepoint.com/sites/IntranetPortal/adm/ETL");
             Uri ETLUri = new Uri("https://kineticsys.sharepoint.com/sites/IntranetPortal/adm/ETL");
@@ -141,62 +88,13 @@ namespace ImportListFromCSV
             {
                 Trace.TraceError("Failed: " + ex.Message);
                 Trace.TraceError("Stack Trace: " + ex.StackTrace);
-                
+             
+
 
             }
         }
 
-        /*
-        public static void ExecuteQueryWithIncrementalRetry(this ClientContext context, int retryCount, int delay)
-        {
-            int retryAttempts = 0;
-            int backoffInterval = delay;
-            if (retryCount <= 0)
-                throw new ArgumentException("Provide a retry count greater than zero.");
-            if (delay <= 0)
-                throw new ArgumentException("Provide a delay greater than zero.");
-            while (retryAttempts < retryCount)
-            {
-                try
-                {
-                    context.ExecuteQuery();
-                    return;
-                }
-                catch (WebException wex)
-                {
-                    var response = wex.Response as HttpWebResponse;
-                    if (response != null &  response.StatusCode == (HttpStatusCode)429)
-                    {
-                        int retryAfterInMs = DefaultRetryAfterInMs;
-                        string retryAfter = response.GetResponseHeader(RetryAfterHeaderName);
-                        //if (!string.IsNullOrEmpty(retryAfter * 1000))
-                        //{
-                        //if (!int.TryParse(retryAfter, out retryAfterInMs))
-                        //{
-                        //retryAfterInMs = DefaultRetryAfterInMs;
-                        //}
-                        //}
-
-                        Console.WriteLine(string.Format("CSOM request exceeded usage limits. Sleeping for {0} milliseconds before retrying.", retryAfterInMs));
-                        //Add delay.
-                        System.Threading.Thread.Sleep(retryAfterInMs);
-                        //Add to retry count.
-                        retryAttempts++;
-                    }
-
-                    else
-                    {
-                        throw;
-                    }
-                }
-            }
-          //  throw new MaximumRetryAttemptedException(string.Format("Maximum retry attempts {0}, have been attempted.", retryCount));
-        }*/
-
-
-
-
-
+        
         public static void CopyFileToSP(string fileName, string sourcePath, string targetPath)
         {
             string sourceFile = System.IO.Path.Combine(sourcePath, fileName);
