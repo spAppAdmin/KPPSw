@@ -217,7 +217,6 @@
     <Content Include="Global.asax" />
     <Content Include="Images\upload2.png" />
     <Content Include="Pages\Default.aspx" />
-    <Content Include="Pages\uploader.aspx" />
     <Content Include="Scripts\app.css" />
     <Content Include="App.config" />
     <None Include="Properties\PublishProfiles\csvUploadWeb - Web Deploy.pubxml" />
@@ -252,13 +251,6 @@
     </Compile>
     <Compile Include="Pages\upload.aspx.designer.cs">
       <DependentUpon>upload.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\uploader.aspx.cs">
-      <DependentUpon>uploader.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Pages\uploader.aspx.designer.cs">
-      <DependentUpon>uploader.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SharePointContext.cs" />

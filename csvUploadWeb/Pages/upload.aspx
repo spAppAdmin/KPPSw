@@ -8,67 +8,13 @@
 <head runat="server">
     <title>SharePoint CSV Upload</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script type="text/javascript" src="//ajax.aspnetcdn.com/ajax/4.0/1/MicrosoftAjax.js"></script>
-<script type="text/javascript" src="/_layouts/15/sp.js"></script>
+
     <script src="../Scripts/app.js"></script>
     <link href="../Scripts/app.css" rel="stylesheet" />
     
-     <script type="text/javascript" language="javascript">
-
-
-      $(document).ready(function() {  
-      //  SP.SOD.executeFunc('sp.js', 'SP.ClientContext', showModalPopUp);  
-    });  
-
-    function showModalPopUp() {  
-        //Set options for Modal PopUp  
-        var options = {  
-            url: 'upload.aspx?IsDlg=1', //Set the url of the page  
-            title: 'SharePoint Modal Pop Up', //Set the title for the pop up  
-            allowMaximize: false,  
-            showClose: true,  
-            width: 600,  
-            height: 400  
-        };  
-        //Invoke the modal dialog by passing in the options array variable  
-        SP.SOD.execute('sp.ui.dialog.js', 'SP.UI.ModalDialog.showModalDialog', options);  
-        return false;  
-    }  
-        </script>
-
-
-
-
-    <script type="text/javascript">
-    var hostweburl;
-
-    // Load the SharePoint resources.
-    $(document).ready(function () {
-
-        // Get the URI decoded add-in web URL.
-        hostweburl =    decodeURIComponent(getQueryStringParameter("SPHostUrl") );
-
-        // The SharePoint js files URL are in the form:
-        // web_url/_layouts/15/resource.js
-        var scriptbase = hostweburl + "/_layouts/15/";
-
-        // Load the js file and continue to the 
-        // success handler.
-        $.getScript(scriptbase + "SP.UI.Controls.js") });
-
-    // Function to retrieve a query string value.
-    function getQueryStringParameter(paramToRetrieve) {
-        var params =
-            document.URL.split("?")[1].split("&amp;");
-        var strParams = "";
-        for (var i = 0; i < params.length; i = i + 1) {
-            var singleParam = params[i].split("=");
-            if (singleParam[0] == paramToRetrieve)
-                return singleParam[1];
-        }
-    }
-</script>
+    
     
     </head>
 
@@ -119,18 +65,16 @@
         <ContentTemplate>
             <asp:Button ID="Button1_Click1" runat="server" Text="Process CSV" OnClick="Button1_Click" CssClass="btnProcess"/>
             <asp:Label ID="msg" runat="server" Text="xxx"></asp:Label>
+            <div id="errorMessagePlaceHolder"></div>
         </ContentTemplate>
     </asp:UpdatePanel>         
 </div>
 
-<div>
+
+    
 
 
 
-<asp:UpdatePanel id="ErrorUpdatePanel" runat="server" UpdateMode="Conditional">
-
-</asp:UpdatePanel>
-</div>
 
         
 
@@ -161,8 +105,12 @@
             <td>Action</td>
             <td>
                 <asp:RadioButtonList ID="rbAction" runat="server">
-                    <asp:ListItem Value="Delete" Text="Delete all list records" ></asp:ListItem>
-                    <asp:ListItem Value="Add" Text="Add only new records" ></asp:ListItem>
+                    <asp:ListItem Value="AddNew" Text="Add New" >Only new records added from CSV</asp:ListItem>
+                    <asp:ListItem Value="AddAll" Text="Add All" >All records on CSV added even if pre-exisitng</asp:ListItem>
+                    <asp:ListItem Value="Upate" Text="Update" >Existing records deleted and replaced from CSV</asp:ListItem>
+                    <asp:ListItem Value="Delete" Text="Delete all list records" >Delete all list records</asp:ListItem>
+                    <asp:ListItem Value="DeleteCSV" Text="Delete only records on CSV" ></asp:ListItem>
+                    
                     <asp:ListItem Value="Update" Text="Update Records" ></asp:ListItem>
                 </asp:RadioButtonList>
             <span><small>Selecting deletes records with matching titles and replaces with new record</small></span>
@@ -180,6 +128,8 @@
 
 </div>
 
+
+          <div id="renderAnnouncements"></div>
 
             
 </form> 

@@ -58,54 +58,66 @@ namespace csvUploadWeb.Pages
 
         protected void Button1_Click(object sender, EventArgs e)
         {
-            var spContext = SharePointContextProvider.Current.GetSharePointContext(Context);
-            var ctx = spContext.CreateUserClientContextForSPHost();
+            try
+            {
+                var spContext = SharePointContextProvider.Current.GetSharePointContext(Context);
+                var ctx = spContext.CreateUserClientContextForSPHost();
 
-            var projectURL = txtProjURL.Text;
-            var file = csvFile.Value.ToString();
-            var listName = ddTargetList.SelectedValue;
-            var action = rbAction.SelectedValue;
-             var lib = "CSV Uploads";
-
-            var path = Path.Combine("@", file);
-            string fileNameWoExt = Path.GetFileNameWithoutExtension(file);
-            string fileNamewExt = Path.GetFileName(file);
-            string filepath = Path.GetFullPath(file);
-            string fileExt = Path.GetExtension(file);
-
-
-            try {
-                string csvPath = @file;
+                var projectURL = txtProjURL.Text;
+                var file = csvFile.Value.ToString();
+                var listName = ddTargetList.SelectedValue;
+                var path = Path.Combine("@", file);
+                string fileNameWoExt = Path.GetFileNameWithoutExtension(file);
+                string fileNamewExt = Path.GetFileName(file);
+                string filepath = Path.GetFullPath(file);
+                string fileExt = Path.GetExtension(file);
+                string csvPath = file;
                 Uri projSiteUrl = new Uri(projectURL);
-                var tList = listName;
                 var lookup = "CostCodeList";
                  string lookupFieldName = "AreaName_x002b_SubTask";
                 string lookupFieldType = "Calculated";
+                var action = rbAction.SelectedValue;
+                Int32 recordCount = 0;
 
-                //throw new Exception("EXC");
+                switch (action)
+                {
+                    case "Delete":
+                        ActionDeleteAllListItems(listName, projSiteUrl);
+                        break;
+                    case "DeleteCSV":
+                        recordCount = ActionDeleteCSVListItems(listName,projSiteUrl,csvPath);
+                        break;
+                    case "AddNew":
+                        recordCount = ActionAddNewListItems(csvPath, projSiteUrl, action, listName, fileNamewExt, lookup, lookupFieldName, lookupFieldType);
+                        break;
+                    case "AddAll":
+                        recordCount = ActionAddAllListItems(csvPath, projSiteUrl, action, listName, fileNamewExt, lookup, lookupFieldName, lookupFieldType);
+                        break;
+                    case "Update":
+                        recordCount = ActionUpdateListItems(csvPath, projSiteUrl, action, listName, fileNamewExt, lookup, lookupFieldName, lookupFieldType);
+                        break;
+                }
 
-                Int32 recordCount = ActionAddNewListItems(csvPath, projSiteUrl, action, tList, fileNamewExt, lookup, lookupFieldName, lookupFieldType);
-                
-               ScriptManager.RegisterStartupScript(UpdatePanel, UpdatePanel.GetType()  , "Alert", "alert('Records Loaded'" + recordCount + ")", true);
+               ScriptManager.RegisterStartupScript(UpdatePanel, UpdatePanel.GetType()  , "Alert", "alert('Records Loaded'" + recordCount + "')", true);
 
-                ScriptManager.RegisterStartupScript(UpdatePanel, UpdatePanel.GetType(), "KK", "alert('done')", true);
+                ShowError("Records Loaded" + recordCount);
+
 
                 System.Text.StringBuilder sb = new System.Text.StringBuilder();
                 sb.Append(@"<script language='javascript'>");
                 sb.Append(@"var lbl = document.getElementById('msgHtml');");
                 sb.Append(@"lbl.color='red';");
                 sb.Append(@"</script>");
-                             
-
-
 
             } catch (Exception ex) {
+                ShowError(ex.Message);
+
                 ScriptManager.RegisterStartupScript(UpdatePanel, UpdatePanel.GetType(), "KK", "alert('Exception')", true);
-                ScriptManager.RegisterStartupScript(UpdatePanel, UpdatePanel.GetType(), "alert", "alert('xxx')", true);
-                ScriptManager.RegisterClientScriptBlock(msg, this.GetType(), "AlertMsg", "<script language='javascript'>var e = document.getElementById('msg');e.text=" + ex.Message + "</script>", false);
-                Console.WriteLine(ex.Message);
-                SPL.LogEntries.Add("Event => ErrorMessage: " + ex.Message + " ErrorSource: " + ex.Source);
-                this.Page.ClientScript.RegisterStartupScript(this.GetType(), "ex", "alert('" + ex.Message + "');", true);
+                //ScriptManager.RegisterStartupScript(UpdatePanel, UpdatePanel.GetType(), "alert", "alert('xxx')", true);
+                //ScriptManager.RegisterClientScriptBlock(msg, this.GetType(), "AlertMsg", "<script language='javascript'>var e = document.getElementById('msg');e.text=" + ex.Message + "</script>", false);
+                //Console.WriteLine(ex.Message);
+                //SPL.LogEntries.Add("Event => ErrorMessage: " + ex.Message + " ErrorSource: " + ex.Source);
+                //this.Page.ClientScript.RegisterStartupScript(this.GetType(), "ex", "alert('" + ex.Message + "');", true);
 
             }
 
@@ -143,123 +155,112 @@ $(document).ready(function() {{
                     errorMessage);
         }
                
-        public void getProjectList()
-        {
-            //ADD-IN CONTEXT
-            string url = "https://kineticsys.sharepoint.com/sites/projects";
-            var uri = new Uri(url);
-            var accessToken = TokenHelper.GetAppOnlyAccessToken(TokenHelper.SharePointPrincipal, uri.Authority, TokenHelper.GetRealmFromTargetUrl(uri));
-            //var ctx = TokenHelper.GetClientContextWithAccessToken(uri.ToString(), accessToken.AccessToken);
-
-            //var spContext = SharePointContextProvider.Current.GetSharePointContext(Context);
-            //var ctx = spContext.CreateUserClientContextForSPHost();
-
-            var ctx = getProjectSpCtx(uri);
-            Web web = ctx.Web;
-
-            List list = ctx.Web.Lists.GetByTitle("KPPS Projects Catalog");
-            var q = new CamlQuery() { ViewXml = "<View><Query><Where><Eq><FieldRef Name='Status' /><Value Type='Choice'>Active</Value></Eq></Where></Query><ViewFields><FieldRef Name='Project_x0020_Name' /><FieldRef Name='Proj_x0020_Site_x0020_URL' /></ViewFields><QueryOptions /></View>" };
-            sp.ListItemCollection li = list.GetItems(q);
-            ctx.Load(li);
-            ctx.ExecuteQuery();
-
-            foreach (var item in li)
+       
+        public static Int32 ActionDeleteAllListItems(string listName, Uri projSiteURI) {
+            Int32 rtnRecord = 0;
+            ClientContext ctx = getProjectSpCtx(projSiteURI);
+            if (ctx != null)
             {
-                var hyp = (FieldUrlValue)item["Proj_x0020_Site_x0020_URL"];
-                string URL = string.Format("{0}", item.FieldValues["Proj_x0020_Site_x0020_URL"]);
-                string text = string.Format("{0}", item.FieldValues["Project_x0020_Name"]);
-                ddlProjName.Items.Add(new System.Web.UI.WebControls.ListItem(hyp.Description, hyp.Url));
-            }
-
-          
-
-
-
-        }
-
-        public static ClientContext getProjectSpCtx(Uri UriProject)
-        {
-            Uri uriProject = UriProject;
-            ClientContext ctx = new ClientContext(UriProject);
-
-            string accountName = ConfigurationManager.AppSettings["AccountName"];
-            char[] pwdChars = ConfigurationManager.AppSettings["AccountPwd"].ToCharArray();
-            SecureString accountPwd = new SecureString();
-            for (int i = 0; i < (int)pwdChars.Length; i++)
-            {
-                accountPwd.AppendChar(pwdChars[i]);
-            }
-
-            ctx.Credentials = new SharePointOnlineCredentials(accountName, accountPwd);
-
-            return ctx;
-        }
-
-                             
-
-        public static Int32 ActionDeleteAllListItems(List spList,ClientContext ctx) {
-            Int32 recordCount = 0;
-            recordCount = DeleteAllListItems(spList, ctx);
-            return recordCount;
-        }
-
-        public static Int32 ActionDeleteCSVListItems(List spList, ClientContext ctx)
-        {
-            Int32 recordCount = 0;
-            recordCount = DeleteAllListItems(spList, ctx);
-            return recordCount;
-        }
-
-        //Update records from CSV
-        public static void ActionUpdateListItems(string csvPath, Uri projSiteURI, string action, string listName, string fileName, string lookup, string lookupFieldName, string lookupFieldType)
-        {
-            try
-            {
-                ClientContext ctx = getProjectSpCtx(projSiteURI);
-                Int32 recordCount = 0;
-                if (ctx != null)
+                List spList = ctx.Web.Lists.GetByTitle(listName);
+                sp.ListItemCollection listItems = spList.GetItems(CamlQuery.CreateAllItemsQuery());
+                ctx.Load(listItems, eachItem => eachItem.Include(item => item, item => item["ID"]));
+                ctx.ExecuteQuery();
+                var totalListItems = listItems.Count;
+                if (totalListItems > 0)
                 {
-                List<ITLRecord> records = GetRecordsFromITLCsv(csvPath);
-                    List spList = ctx.Web.Lists.GetByTitle(listName);
-
-                    //Checks to see if an item already exists , deletes and re-adds
-
-                    foreach (ITLRecord record in records)
+                    for (var counter = totalListItems - 1; counter > -1; counter--)
                     {
-                        CamlQuery query = new CamlQuery();
-                        query.ViewXml = String.Format("@<View><Query><Where><Eq><FieldRef Name=\"Title\" /><Value Type=\"Text\">{0}</Value></Eq></Where></Query></View>", record.Title);
-                        sp.ListItemCollection existingMappings = spList.GetItems(query);
-                        ctx.Load(existingMappings);
+                        listItems[counter].DeleteObject();
                         ctx.ExecuteQuery();
-                    
-                    var totalListItems = existingMappings.Count;
-
-                        if (totalListItems > 0)
+                        rtnRecord = counter;
+                    }
+                }
+            }
+            return rtnRecord;
+        }
+               
+        public static Int32 ActionDeleteCSVListItems(string listName, Uri projSiteURI, string csvPath)
+        {
+                try
+                {
+                    ClientContext ctx = getProjectSpCtx(projSiteURI);
+                    Int32 recordCount = 0;
+                    if (ctx != null)
+                    {
+                        List<ITLRecord> records = GetRecordsFromITLCsv(csvPath);
+                        List spList = ctx.Web.Lists.GetByTitle(listName);
+                        foreach (ITLRecord record in records)
                         {
-                            for (var counter = totalListItems - 1; counter > -1; counter--)
+                            CamlQuery query = new CamlQuery();
+                            query.ViewXml = String.Format("@<View><Query><Where><Eq><FieldRef Name=\"Title\" /><Value Type=\"Text\">{0}</Value></Eq></Where></Query></View>", record.Title);
+                            sp.ListItemCollection existingMappings = spList.GetItems(query);
+                            ctx.Load(existingMappings);
+                            ctx.ExecuteQuery();
+
+                            var totalListItems = existingMappings.Count;
+
+                            if (totalListItems > 0)
                             {
-                                //Delete record identified by CSV file so new one can be added
-                                existingMappings[counter].DeleteObject();
-                                ctx.ExecuteQuery();
-                        }
-                            AddNewListItem(record, spList, ctx, lookup, lookupFieldName, lookupFieldType);
-                            
+                                for (var counter = totalListItems - 1; counter > -1; counter--)
+                                {
+                                    //Delete record identified by CSV file so new one can be added
+                                    existingMappings[counter].DeleteObject();
+                                    ctx.ExecuteQuery();
+                                   recordCount = counter;
+                            }
                         }
                     }
                 }
-            }catch (Exception ex)
+                    return recordCount;
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+
+        public static Int32 ActionUpdateListItems(string csvPath, Uri projSiteURI, string action, string listName, string fileName, string lookup, string lookupFieldName, string lookupFieldType)
+        {
+        try
+        {
+            ClientContext ctx = getProjectSpCtx(projSiteURI);
+            Int32 recordCount = 0;
+            if (ctx != null)
+            {
+                List<ITLRecord> records = GetRecordsFromITLCsv(csvPath);
+                List spList = ctx.Web.Lists.GetByTitle(listName);
+
+                foreach (ITLRecord record in records)
+                {
+                    CamlQuery query = new CamlQuery();
+                    query.ViewXml = String.Format("@<View><Query><Where><Eq><FieldRef Name=\"Title\" /><Value Type=\"Text\">{0}</Value></Eq></Where></Query></View>", record.Title);
+                    sp.ListItemCollection existingMappings = spList.GetItems(query);
+                    ctx.Load(existingMappings);
+                    ctx.ExecuteQuery();
+                    var totalListItems = existingMappings.Count;
+
+                    if (totalListItems > 0)
+                    {
+                        for (var counter = totalListItems - 1; counter > -1; counter--)
+                        {
+                            //Delete record identified by CSV file so new one can be added
+                            existingMappings[counter].DeleteObject();
+                            ctx.ExecuteQuery();
+                        }
+                         AddNewListItem(record, spList, ctx, lookup, lookupFieldName, lookupFieldType);
+
+                    }
+                }
+            }
+            return recordCount;
+
+        } catch (Exception ex)
             {
                 throw ex;
             }
-            finally
-            {
-
-            }
         }
-
-
-        //Add only new list items in CSV
-        public static Int32 ActionAddNewListItems(string csvPath, Uri projSiteURI, string action, string listName, string fileName, string lookup, string lookupFieldName, string lookupFieldType)
+    
+         public static Int32 ActionAddNewListItems(string csvPath, Uri projSiteURI, string action, string listName, string fileName, string lookup, string lookupFieldName, string lookupFieldType)
         {
             try
             {
@@ -304,36 +305,49 @@ $(document).ready(function() {{
             {
                 throw ex;
             }
-            finally
-            {
-                
-            }
+            
         }
 
-
-
-
-
-
-        public static Int32 DeleteAllListItems(List spList, ClientContext ctx) {
-            Int32 rtnRecord = 0;
-            sp.ListItemCollection listItems = spList.GetItems(CamlQuery.CreateAllItemsQuery());
-            ctx.Load(listItems, eachItem => eachItem.Include(item => item, item => item["ID"]));
-            ctx.ExecuteQuery();
-            var totalListItems = listItems.Count;
-            if (totalListItems > 0)
+        public static Int32 ActionAddAllListItems(string csvPath, Uri projSiteURI, string action, string listName, string fileName, string lookup, string lookupFieldName, string lookupFieldType)
+        {
+            try
             {
-                for (var counter = totalListItems - 1; counter > -1; counter--)
+                ClientContext ctx = getProjectSpCtx(projSiteURI);
+
+                Int32 recordCount = 0;
+
+                if (ctx != null)
                 {
-                    listItems[counter].DeleteObject();
-                    ctx.ExecuteQuery();
-                    rtnRecord = counter;
+                    List<ITLRecord> records = GetRecordsFromITLCsv(csvPath);
+                    List spList = ctx.Web.Lists.GetByTitle(listName);
+
+
+                    //Checks to see if an item already exists with the same title and preserves
+
+                    foreach (ITLRecord record in records)
+                    {
+                        CamlQuery query = new CamlQuery();
+                        query.ViewXml = String.Format("@<View><Query><Where><Eq><FieldRef Name=\"Title\" /><Value Type=\"Text\">{0}</Value></Eq></Where></Query></View>", record.Title);
+                        var existingMappings = spList.GetItems(query);
+                        ctx.Load(existingMappings);
+                        ctx.ExecuteQuery();
+                        recordCount = existingMappings.Count;
+                        AddNewListItem(record, spList, ctx, lookup, lookupFieldName, lookupFieldType);
+                    }
                 }
+                return recordCount;
             }
-            return rtnRecord;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
-         public static void AddNewListItem(ITLRecord record, List spList, ClientContext clientContext, string LookupList, string lookupFieldName, string lookupFieldType)
+
+
+
+
+        public static void AddNewListItem(ITLRecord record, List spList, ClientContext clientContext, string LookupList, string lookupFieldName, string lookupFieldType)
         {
             try
             {
@@ -396,7 +410,6 @@ $(document).ready(function() {{
                 throw ex;
             }
         }
-
 
         public static List<ITLRecord> GetRecordsFromITLCsv(string csvPath)
         {
@@ -509,7 +522,54 @@ $(document).ready(function() {{
             ctx.ExecuteQuery();
         }
 
-      
+        public void getProjectList()
+        {
+            //ADD-IN CONTEXT
+            string url = "https://kineticsys.sharepoint.com/sites/projects";
+            var uri = new Uri(url);
+            var accessToken = TokenHelper.GetAppOnlyAccessToken(TokenHelper.SharePointPrincipal, uri.Authority, TokenHelper.GetRealmFromTargetUrl(uri));
+            //var ctx = TokenHelper.GetClientContextWithAccessToken(uri.ToString(), accessToken.AccessToken);
+
+            //var spContext = SharePointContextProvider.Current.GetSharePointContext(Context);
+            //var ctx = spContext.CreateUserClientContextForSPHost();
+
+            var ctx = getProjectSpCtx(uri);
+            Web web = ctx.Web;
+
+            List list = ctx.Web.Lists.GetByTitle("KPPS Projects Catalog");
+            var q = new CamlQuery() { ViewXml = "<View><Query><Where><Eq><FieldRef Name='Status' /><Value Type='Choice'>Active</Value></Eq></Where></Query><ViewFields><FieldRef Name='Project_x0020_Name' /><FieldRef Name='Proj_x0020_Site_x0020_URL' /></ViewFields><QueryOptions /></View>" };
+            sp.ListItemCollection li = list.GetItems(q);
+            ctx.Load(li);
+            ctx.ExecuteQuery();
+
+            foreach (var item in li)
+            {
+                var hyp = (FieldUrlValue)item["Proj_x0020_Site_x0020_URL"];
+                string URL = string.Format("{0}", item.FieldValues["Proj_x0020_Site_x0020_URL"]);
+                string text = string.Format("{0}", item.FieldValues["Project_x0020_Name"]);
+                ddlProjName.Items.Add(new System.Web.UI.WebControls.ListItem(hyp.Description, hyp.Url));
+            }
+
+        }
+
+        public static ClientContext getProjectSpCtx(Uri UriProject)
+        {
+            Uri uriProject = UriProject;
+            ClientContext ctx = new ClientContext(UriProject);
+
+            string accountName = ConfigurationManager.AppSettings["AccountName"];
+            char[] pwdChars = ConfigurationManager.AppSettings["AccountPwd"].ToCharArray();
+            SecureString accountPwd = new SecureString();
+            for (int i = 0; i < (int)pwdChars.Length; i++)
+            {
+                accountPwd.AppendChar(pwdChars[i]);
+            }
+
+            ctx.Credentials = new SharePointOnlineCredentials(accountName, accountPwd);
+
+            return ctx;
+        }
+
     }
 
 

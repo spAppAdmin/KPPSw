@@ -25,8 +25,10 @@
     }
 
 
+#frmtbl{width:100%;}
+
 #frmtbl tr td {
-    padding: 15px;
+    padding: 10px;
 }
 
 #progress{

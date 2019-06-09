@@ -1,30 +1,57 @@
 ﻿
 
 
-// retrieve the appWebUrl and hostWebUrl from the querystring somewhere above here
-// you'll need them to retrieve the scripts and make the CSOM calls
-var scriptBase = hostweburl + "/_layouts/15/";
-$.getScript(scriptBase + "MicrosoftAjax.js").then(function (data) {
-    return $.getScript(scriptbase + "SP.Runtime.js");
-}).then(function (data) {
-    return $.getScript(scriptbase + "SP.js");
-}).then(function (data) {
-    $.getScript(scriptBase + "SP.RequestExecutor.js");
-}).then(function (data) {
-    var ctx = new SP.ClientContext(appWebUrl),
-        factory = new SP.ProxyWebRequestExecutorFactory(appWebUrl),
-        web;
 
-    ctx.set_webRequestExecutorFactory(factory);
-    web = ctx.get_web();
-    ctx.load(web);
-    ctx.executeQueryAsync(function () {
-        // log the name of the app web to the console
-        console.log(web.get_title());
-    }, function (sender, args) {
-        console.log("Error : " + args.get_message());
+    $(document).ready(function () {
+       
+
+    var hostweburl = decodeURIComponent(getQueryStringParameter("SPHostUrl"));
+    var appweburl = decodeURIComponent(getQueryStringParameter("SPAppWebUrl"));
+        //alert(hostweburl);
+        //alert(appweburl);
+    var scriptbase = hostweburl + "/_layouts/15/";
+        $.getScript(scriptbase + 'SP.Runtime.js',
+
+            function () {
+                $.getScript(scriptbase + 'SP.js',
+                    function () { $.getScript(scriptbase + 'SP.RequestExecutor.js'); }
+                );
+            }
+        );
     });
-});
+
+
+
+function getQueryStringParameter(paramToRetrieve) {
+            var params =
+        document.URL.split("?")[1].split("&amp;");
+    var strParams = "";
+            for (var i = 0; i < params.length; i = i + 1) {
+                var singleParam = params[i].split("=");
+    if (singleParam[0] == paramToRetrieve)
+        return singleParam[1];
+}
+}
+
+
+
+    function showModalPopUp() {
+        //Set options for Modal PopUp  
+        var options = {
+        url: 'upload.aspx?IsDlg=1', //Set the url of the page
+    title: 'SharePoint Modal Pop Up', //Set the title for the pop up
+    allowMaximize: false,
+    showClose: true,
+    width: 600,
+    height: 400
+};
+//Invoke the modal dialog by passing in the options array variable
+//SP.SOD.execute('sp.ui.dialog.js', 'SP.UI.ModalDialog.showModalDialog', options);
+return false;
+}
+
+
+
 
 
 
@@ -32,6 +59,8 @@ $.getScript(scriptBase + "MicrosoftAjax.js").then(function (data) {
 var appWebUrl, hostWebUrl;
 
 $(document).ready(function () {
+
+   // showModalPopUp();
 
     $("#ddlProjName").change(function () {
         var selectedProj = $(this).children("option:selected").val();
