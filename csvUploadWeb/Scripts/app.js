@@ -9,17 +9,38 @@
     var appweburl = decodeURIComponent(getQueryStringParameter("SPAppWebUrl"));
         //alert(hostweburl);
         //alert(appweburl);
-    var scriptbase = hostweburl + "/_layouts/15/";
-        $.getScript(scriptbase + 'SP.Runtime.js',
+        var scriptbase = hostweburl + "/_layouts/15/";
+        $.getScript(scriptbase + "SP.UI.Controls.js", renderChrome);
+
+     /*   $.getScript(scriptbase + 'SP.Runtime.js',
 
             function () {
                 $.getScript(scriptbase + 'SP.js',
                     function () { $.getScript(scriptbase + 'SP.RequestExecutor.js'); }
                 );
             }
-        );
+        );*/
+
+
+
+
+
     });
 
+
+
+function renderChrome() {
+
+    var options = {
+        "appIconUrl": "/images/siteicon.png",
+        "appTitle": "CUFS - CSV Uploader For SharePoint"
+    };
+
+    var nav = new SP.UI.Controls.Navigation(
+        "chrome_ctrl_placeholder",
+        options);
+    nav.setVisible(true);
+}
 
 
 function getQueryStringParameter(paramToRetrieve) {
@@ -28,7 +49,7 @@ function getQueryStringParameter(paramToRetrieve) {
     var strParams = "";
             for (var i = 0; i < params.length; i = i + 1) {
                 var singleParam = params[i].split("=");
-    if (singleParam[0] == paramToRetrieve)
+    if (singleParam[0] === paramToRetrieve)
         return singleParam[1];
 }
 }
@@ -51,7 +72,19 @@ return false;
 }
 
 
-
+function move() {
+    var elem = document.getElementById("progressBar");
+    var width = 1;
+    var id = setInterval(frame, 50);
+    function frame() {
+        if (width >= 100) {
+            clearInterval(id);
+        } else {
+            width++;
+            elem.style.width = width + '%';
+        }
+    }
+}
 
 
 
@@ -145,16 +178,6 @@ function getParameterByName(name) {
 }
 
 
-//function to get a parameter value by a specific key
-function getQueryStringParameter(urlParameterKey) {
-    var params = document.URL.split('?')[1].split('&');
-    var strParams = '';
-    for (var i = 0; i < params.length; i = i + 1) {
-        var singleParam = params[i].split('=');
-        if (singleParam[0] === urlParameterKey)
-            return singleParam[1];
-    }
-}
 
 
 // Get parameters from the query string.

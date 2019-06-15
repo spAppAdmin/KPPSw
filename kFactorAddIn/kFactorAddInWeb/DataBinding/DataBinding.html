@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <title></title>
+    <script src="../Scripts/jquery-1.9.1.js" type="text/javascript"></script>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
+
+    <!-- To enable offline debugging using a local reference to Office.js, use:                        -->
+    <!-- <script src="../Scripts/Office/MicrosoftAjax.js" type="text/javascript"></script>  -->
+    <!-- <script src="../Scripts/Office/1/office.js" type="text/javascript"></script>  -->
+
+    <link href="../App.css" rel="stylesheet" type="text/css" />
+    <script src="../App.js" type="text/javascript"></script>
+    <script src="../Visualization.js" type="text/javascript"></script>
+
+    <link href="DataBinding.css" rel="stylesheet" type="text/css" />
+    <script src="DataBinding.js" type="text/javascript"></script>
+    
+    <!-- For the Office UI Fabric, go to https://aka.ms/office-ui-fabric to learn more. -->
+    <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/2.1.0/fabric.min.css">
+    <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/2.1.0/fabric.components.min.css">
+    
+    <!-- To enable the offline use of Office UI Fabric, use: -->
+    <!-- link rel="stylesheet" href="../Content/fabric.min.css" -->
+    <!-- link rel="stylesheet" href="../Content/fabric.components.min.css" -->
+</head>
+<body>
+    <div id="content-main">
+        <div class="padding">
+            <div class="ms-font-xl ms-fontColor-neutralSecondary ms-fontWeight-semilight">Bind to Data</div>
+            <p class="ms-font-m-plus ms-fontColor-neutralTertiary">Please choose from one of the following options:</p>
+            
+            <button class="ms-Button ms-Button--primary" id="bind-to-existing-data">
+                <span class="ms-Button-icon"><i class="ms-Icon ms-Icon--plus"></i></span>
+                <span class="ms-Button-label">Bind to existing data</span>
+                <span class="ms-Button-description">Binds to existing data and displays it.</span>
+            </button>
+            <br />
+            <button class="ms-Button ms-Button--primary" id="insert-sample-data">
+                <span class="ms-Button-icon"><i class="ms-Icon ms-Icon--plus"></i></span>
+                <span class="ms-Button-label">Insert sample data</span>
+                <span class="ms-Button-description">Inserts sample data and displays visualization</span>
+            </button>
+        </div>
+    </div>
+    <div id="content-footer">
+        <div class="padding">
+            <div class="ms-font-m"><a class="ms-Link ms-Link--hero" href="../Home/Home.html">Back to Visualization</a></div>
+        </div>
+    </div>
+</body>
+</html>

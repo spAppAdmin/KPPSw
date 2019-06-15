@@ -22,17 +22,15 @@ using CsvHelper.Configuration;
 using System.Reflection;
 using System.Linq.Expressions;
 using System.Net;
-
-
-
-
-
+using System.Diagnostics.Tracing;
+using System.Web.Script.Serialization;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
 namespace csvUploadWeb.Pages
 {
     public partial class upload : System.Web.UI.Page
     {
         protected void Page_PreInit(object sender, EventArgs e)
-        {
+        {                                                                                                                                                                                                                                                                                                            
             Uri redirectUrl;
             switch (SharePointContextProvider.CheckRedirectionStatus(Context, out redirectUrl))
             {
@@ -51,10 +49,8 @@ namespace csvUploadWeb.Pages
         protected void Page_Load(object sender, EventArgs e)
         {
                   getProjectList();
-                 
         }
-
-
+                                                                               
 
         protected void Button1_Click(object sender, EventArgs e)
         {
@@ -74,7 +70,7 @@ namespace csvUploadWeb.Pages
                 string csvPath = file;
                 Uri projSiteUrl = new Uri(projectURL);
                 var lookup = "CostCodeList";
-                 string lookupFieldName = "AreaName_x002b_SubTask";
+                string lookupFieldName = "AreaName_x002b_SubTask";
                 string lookupFieldType = "Calculated";
                 var action = rbAction.SelectedValue;
                 Int32 recordCount = 0;
@@ -85,7 +81,7 @@ namespace csvUploadWeb.Pages
                         ActionDeleteAllListItems(listName, projSiteUrl);
                         break;
                     case "DeleteCSV":
-                        recordCount = ActionDeleteCSVListItems(listName,projSiteUrl,csvPath);
+                        recordCount = ActionDeleteCSVListItems(listName, projSiteUrl, csvPath);
                         break;
                     case "AddNew":
                         recordCount = ActionAddNewListItems(csvPath, projSiteUrl, action, listName, fileNamewExt, lookup, lookupFieldName, lookupFieldType);
@@ -98,63 +94,41 @@ namespace csvUploadWeb.Pages
                         break;
                 }
 
-               ScriptManager.RegisterStartupScript(UpdatePanel, UpdatePanel.GetType()  , "Alert", "alert('Records Loaded'" + recordCount + "')", true);
 
-                ShowError("Records Loaded" + recordCount);
-
-
-                System.Text.StringBuilder sb = new System.Text.StringBuilder();
-                sb.Append(@"<script language='javascript'>");
-                sb.Append(@"var lbl = document.getElementById('msgHtml');");
-                sb.Append(@"lbl.color='red';");
-                sb.Append(@"</script>");
-
-            } catch (Exception ex) {
-                ShowError(ex.Message);
-
-                ScriptManager.RegisterStartupScript(UpdatePanel, UpdatePanel.GetType(), "KK", "alert('Exception')", true);
-                //ScriptManager.RegisterStartupScript(UpdatePanel, UpdatePanel.GetType(), "alert", "alert('xxx')", true);
-                //ScriptManager.RegisterClientScriptBlock(msg, this.GetType(), "AlertMsg", "<script language='javascript'>var e = document.getElementById('msg');e.text=" + ex.Message + "</script>", false);
-                //Console.WriteLine(ex.Message);
-                //SPL.LogEntries.Add("Event => ErrorMessage: " + ex.Message + " ErrorSource: " + ex.Source);
-                //this.Page.ClientScript.RegisterStartupScript(this.GetType(), "ex", "alert('" + ex.Message + "');", true);
+                clientMessage(this.Page, action + "cooplete");
 
             }
-
+           
+            catch(Exception ex)
+            {
+                HandleException(this.Page, ex);
+            }
         }
 
-        private void HideError()
+
+     
+        /// <summary>
+        /// //////////Messaging
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="ex"></param>
+
+        public static void HandleException(Page page, Exception ex)
         {
-            ScriptManager.RegisterStartupScript(Page, GetType(), "HideErrorMessageScript", HideErrorMessageScript(), true);
+            var message = new JavaScriptSerializer().Serialize(ex.Message.ToString());
+            var script = string.Format("alert({0});", message);
+            ScriptManager.RegisterClientScriptBlock(page, page.GetType(), "", "alert('" + message + "');", true);
+            ScriptManager.RegisterClientScriptBlock(page, page.GetType(), "ssss", script, true);
         }
 
-        private void ShowError(string errorMessage)
-        {
-            ScriptManager.RegisterStartupScript(Page, GetType(), "ErrorMessageScript", ErrorMessageScript(errorMessage), true);
-        }
-        
-        private static string HideErrorMessageScript()
-        {
-            return @"
-$(document).ready(function() {
-    $('#errorMessagePlaceHolder').hide();
-});
-";
-        }
 
-        private static string ErrorMessageScript(string errorMessage)
+        public static void clientMessage(Page page, string msgx)
         {
-            return
-                string.Format(
-                    @"
-$(document).ready(function() {{
-    $('#errorMessagePlaceHolder').html('{0}');
-    $('#errorMessagePlaceHolder').show();
-}});
-",
-                    errorMessage);
+            var message = new JavaScriptSerializer().Serialize(msgx);
+            var script = string.Format("alert({0});",msgx);
+            ScriptManager.RegisterClientScriptBlock(page, page.GetType(), "", "alert('" + msgx + "');", true);
+            ScriptManager.RegisterClientScriptBlock(page, page.GetType(), "ssss", script, true);
         }
-               
        
         public static Int32 ActionDeleteAllListItems(string listName, Uri projSiteURI) {
             Int32 rtnRecord = 0;
@@ -344,7 +318,10 @@ $(document).ready(function() {{
         }
 
 
-
+        public void NullException(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
 
 
         public static void AddNewListItem(ITLRecord record, List spList, ClientContext clientContext, string LookupList, string lookupFieldName, string lookupFieldType)
@@ -356,6 +333,11 @@ $(document).ready(function() {{
                 foreach (PropertyInfo property in properties)
                 {
                     object propValue = property.GetValue(record, null);
+
+                    if (String.IsNullOrEmpty(propValue.ToString())) {
+                           throw new Exception(propValue.ToString() + " Column has blank values");
+                    }
+
                     if (!String.IsNullOrEmpty(propValue.ToString()))
                     {
                         Field matchingField = spList.Fields.GetByInternalNameOrTitle(property.Name);
@@ -400,7 +382,6 @@ $(document).ready(function() {{
                 {
                     //Set each field value
                     oListItem[itemFieldValue.Key] = itemFieldValue.Value;
-                    
                 }
                 oListItem.Update();
                 clientContext.ExecuteQuery();
@@ -422,7 +403,11 @@ $(document).ready(function() {{
                     {
                         HasHeaderRecord = true,
                         HeaderValidated = null,
-                        MissingFieldFound = null
+                        //MissingFieldFound = null,
+                         
+                        IgnoreBlankLines = true
+                        
+
                     });
 
                     using (parser)
@@ -430,6 +415,9 @@ $(document).ready(function() {{
                         //csvReader.Configuration.HeaderValidated(false);
                         parser.Configuration.TrimOptions = TrimOptions.Trim;
                         parser.Configuration.RegisterClassMap<ProjectITLMap>();
+                        parser.Configuration.HeaderValidated = null;
+                        parser.Configuration.MissingFieldFound = null;
+                        //new NullableConverter(typeof(string)).ConvertFromString(new TypeConverterOptions(), "NA")
                         records = parser.GetRecords<ITLRecord>().ToList();
                     }
                 }
@@ -437,7 +425,7 @@ $(document).ready(function() {{
                 return records;
             }
             catch (Exception ex)
-            {
+            {         
                 throw ex;
             }
             
@@ -549,6 +537,8 @@ $(document).ready(function() {{
                 string text = string.Format("{0}", item.FieldValues["Project_x0020_Name"]);
                 ddlProjName.Items.Add(new System.Web.UI.WebControls.ListItem(hyp.Description, hyp.Url));
             }
+            // ddlProjName.SelectedItem.Text= "KPPS Project Template";
+            // txtProjURL.Text = "000000000 KPPS Project Template";
 
         }
 
@@ -570,6 +560,20 @@ $(document).ready(function() {{
             return ctx;
         }
 
+    }
+
+
+    [Serializable()]
+    public class InvalidDepartmentException : System.Exception
+    {
+        public InvalidDepartmentException() : base() { }
+        public InvalidDepartmentException(string message) : base(message) { }
+        public InvalidDepartmentException(string message, System.Exception inner) : base(message, inner) { }
+
+        // A constructor is needed for serialization when an
+        // exception propagates from a remoting server to the client. 
+        protected InvalidDepartmentException(System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 
 

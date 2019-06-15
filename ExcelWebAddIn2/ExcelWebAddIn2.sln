@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.572
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelWebAddIn2", "ExcelWebAddIn2\ExcelWebAddIn2.csproj", "{303D314C-FF09-4FFA-AF1A-1F3245D045E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelWebAddIn2Web", "ExcelWebAddIn2Web\ExcelWebAddIn2Web.csproj", "{8E89CB33-78B6-4A49-8186-FA0909889101}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{303D314C-FF09-4FFA-AF1A-1F3245D045E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{303D314C-FF09-4FFA-AF1A-1F3245D045E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{303D314C-FF09-4FFA-AF1A-1F3245D045E9}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{303D314C-FF09-4FFA-AF1A-1F3245D045E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{303D314C-FF09-4FFA-AF1A-1F3245D045E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{303D314C-FF09-4FFA-AF1A-1F3245D045E9}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{8E89CB33-78B6-4A49-8186-FA0909889101}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E89CB33-78B6-4A49-8186-FA0909889101}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E89CB33-78B6-4A49-8186-FA0909889101}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E89CB33-78B6-4A49-8186-FA0909889101}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CD2E499D-FB22-4C64-941F-79424CAA743C}
+	EndGlobalSection
+EndGlobal

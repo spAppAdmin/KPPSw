@@ -211,26 +211,29 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Error.html" />
+    <Content Include="Images\ajax-loader.gif" />
     <Content Include="Images\alert.png" />
     <Content Include="Images\loader1.gif" />
     <Content Include="Images\progress.gif" />
     <Content Include="Global.asax" />
+    <Content Include="Images\siteicon.png" />
     <Content Include="Images\upload2.png" />
     <Content Include="Pages\Default.aspx" />
     <Content Include="Scripts\app.css" />
     <Content Include="App.config" />
-    <None Include="Properties\PublishProfiles\csvUploadWeb - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\KSIApp - Web Deploy %282%29.pubxml" />
-    <None Include="Properties\PublishProfiles\KSIApp - Web Deploy.pubxml" />
+    <Content Include="Content\ITL.csv" />
     <Content Include="Properties\webjobs-list.json" />
+    <None Include="Properties\PublishProfiles\csvUpload - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.9.1.intellisense.js" />
     <Content Include="Pages\upload.aspx" />
     <Content Include="Scripts\app.js" />
+    <Content Include="Scripts\index.html" />
     <Content Include="Scripts\jquery-1.9.1.js" />
     <Content Include="Scripts\jquery-1.9.1.min.js" />
     <Content Include="Scripts\jquery.lineProgressbar.css" />
     <Content Include="Scripts\jquery.lineProgressbar.js" />
     <Content Include="Images\upload.png" />
+    <Content Include="siteicon.png" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -273,7 +276,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Content\" />
     <Folder Include="Models\" />
     <Folder Include="Services\" />
   </ItemGroup>
@@ -310,6 +312,10 @@
     <Error Condition="!Exists('..\packages\Microsoft.Web.WebJobs.Publish.2.0.0\build\Microsoft.Web.WebJobs.Publish.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Web.WebJobs.Publish.2.0.0\build\Microsoft.Web.WebJobs.Publish.targets'))" />
   </Target>
   <Import Project="..\packages\Microsoft.Web.WebJobs.Publish.2.0.0\build\Microsoft.Web.WebJobs.Publish.targets" Condition="Exists('..\packages\Microsoft.Web.WebJobs.Publish.2.0.0\build\Microsoft.Web.WebJobs.Publish.targets')" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

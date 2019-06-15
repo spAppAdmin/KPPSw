@@ -9,14 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csvUpload", "csvUpload\csvU
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csvUploadWeb", "csvUploadWeb\csvUploadWeb.csproj", "{EAB3F75B-06A0-434B-AD99-7DAC7C2AEEDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KPIReportProcesingWebJob", "KPIReportProcessingWebJob\KPIReportProcesing\KPIReportProcesingWebJob.csproj", "{EBED4F67-5F2F-46D9-A9A1-C9E17A89BEF0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld", "..\..\azure-webjobs-sdk-samples\BasicSamples\HelloWorld\HelloWorld.csproj", "{10DDFD0A-2B8B-45E4-8360-6A405269B969}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kfactor", "Kfactor\Kfactor.csproj", "{A5973A49-91F5-4E90-A7F9-500CE2409D19}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KfactorWeb", "KfactorWeb\KfactorWeb.csproj", "{F451CF86-1B3C-4E3B-9D68-4032193D2EA9}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,24 +28,6 @@ Global
 		{EAB3F75B-06A0-434B-AD99-7DAC7C2AEEDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EAB3F75B-06A0-434B-AD99-7DAC7C2AEEDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EAB3F75B-06A0-434B-AD99-7DAC7C2AEEDD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EBED4F67-5F2F-46D9-A9A1-C9E17A89BEF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EBED4F67-5F2F-46D9-A9A1-C9E17A89BEF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EBED4F67-5F2F-46D9-A9A1-C9E17A89BEF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EBED4F67-5F2F-46D9-A9A1-C9E17A89BEF0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{10DDFD0A-2B8B-45E4-8360-6A405269B969}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{10DDFD0A-2B8B-45E4-8360-6A405269B969}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{10DDFD0A-2B8B-45E4-8360-6A405269B969}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{10DDFD0A-2B8B-45E4-8360-6A405269B969}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A5973A49-91F5-4E90-A7F9-500CE2409D19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A5973A49-91F5-4E90-A7F9-500CE2409D19}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A5973A49-91F5-4E90-A7F9-500CE2409D19}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{A5973A49-91F5-4E90-A7F9-500CE2409D19}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A5973A49-91F5-4E90-A7F9-500CE2409D19}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A5973A49-91F5-4E90-A7F9-500CE2409D19}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{F451CF86-1B3C-4E3B-9D68-4032193D2EA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F451CF86-1B3C-4E3B-9D68-4032193D2EA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F451CF86-1B3C-4E3B-9D68-4032193D2EA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F451CF86-1B3C-4E3B-9D68-4032193D2EA9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
