@@ -34,6 +34,8 @@ namespace csvUploadWeb.Pages
 
         protected void Page_Load(object sender, EventArgs e)
         {
+
+
             // define initial script, needed to render the chrome control
             string script = @"
             function chromeLoaded() {
@@ -55,6 +57,8 @@ namespace csvUploadWeb.Pages
 
             //register script in page
             Page.ClientScript.RegisterClientScriptBlock(typeof(Default), "BasePageScript", script, true);
+
+            
         }
 
         protected void btnSubmit_Click(object sender, EventArgs e)

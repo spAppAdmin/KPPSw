@@ -3,7 +3,7 @@
 <App xmlns="http://schemas.microsoft.com/sharepoint/2012/app/manifest"
      Name="CSVUploader"
      ProductID="{52b69efa-2516-435a-8fd2-55b51c06dec6}"
-     Version="3.0.0.0"
+     Version="3.3.1.0"
      SharePointMinVersion="16.0.0.0"
 >
   <Properties>

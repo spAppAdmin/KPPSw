@@ -21,7 +21,7 @@
     <WorkflowPartId>{3c346dea-2123-4501-8493-e581c643cd07}</WorkflowPartId>
     <CspkgPartId>{21d2f5ab-e163-4d1c-9730-dac52766e678}</CspkgPartId>
     <SqlPackagePartId>{95c1c52e-42c8-45ea-b700-8bef690423a5}</SqlPackagePartId>
-    <ActivePublishProfile>csvUploadWeb - Web Deploy</ActivePublishProfile>
+    <ActivePublishProfile>csvUpload - Web Deploy</ActivePublishProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,21 +52,12 @@
       <DependentUpon>Feature1.feature</DependentUpon>
     </Content>
     <Content Include="Images\Elements.xml" />
-    <Content Include="MenuItemCSV\Elements.xml">
-      <OpcRelationship>feature-elementmanifest</OpcRelationship>
-    </Content>
     <Content Include="Package\Package.Template.xml">
       <DependentUpon>Package.package</DependentUpon>
     </Content>
     <Content Include="Pages\Elements.xml" />
-    <Content Include="RibbonCSVLink\Elements.xml">
-      <OpcRelationship>feature-elementmanifest</OpcRelationship>
-    </Content>
     <Content Include="Scripts\Elements.xml" />
     <Content Include="upload2.png" />
-    <Content Include="up\Elements.xml">
-      <OpcRelationship>feature-elementmanifest</OpcRelationship>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <AppManifestFile Include="AppManifest.xml">
@@ -84,9 +75,6 @@
     <None Include="Images\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{e023085b-1d77-4bf9-81c4-a91582f1d300}</SharePointProjectItemId>
     </None>
-    <None Include="MenuItemCSV\SharePointProjectItem.spdata">
-      <SharePointProjectItemId>{3b258681-66df-472a-9d9e-c58952b59333}</SharePointProjectItemId>
-    </None>
     <None Include="packages.config" />
     <None Include="Package\Package.package">
       <PackageId>{b7f7ad40-4bbf-4060-9801-b4d45791150c}</PackageId>
@@ -94,17 +82,11 @@
     <None Include="Pages\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{a669f4b5-742e-496c-abed-1dbeb2ba1eed}</SharePointProjectItemId>
     </None>
-    <None Include="RibbonCSVLink\SharePointProjectItem.spdata">
-      <SharePointProjectItemId>{19453bb2-b020-439f-9809-c0df67039b03}</SharePointProjectItemId>
-    </None>
     <None Include="Scripts\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{27b9c1cb-1dcb-4dd4-bee4-2d015d814146}</SharePointProjectItemId>
     </None>
     <None Include="SharePointProjectItem.spdata">
       <SharePointProjectItemId>{e9f7095b-c5dd-49f1-b9f0-dd1bddb1aeff}</SharePointProjectItemId>
-    </None>
-    <None Include="up\SharePointProjectItem.spdata">
-      <SharePointProjectItemId>{40ad3b40-961c-4a7b-afc0-6c0c0b853151}</SharePointProjectItemId>
     </None>
   </ItemGroup>
   <ItemGroup>

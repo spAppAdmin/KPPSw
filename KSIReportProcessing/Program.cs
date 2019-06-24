@@ -24,7 +24,7 @@ using System.Net;
 namespace ImportListFromCSV
 {
 
-   
+
 
     public class Program
     {
@@ -52,20 +52,20 @@ namespace ImportListFromCSV
             string targetPath = @"\\kineticsys.sharepoint.com\sites\IntranetPortal\adm\ETL\Documents";
             //CopyFileToSP(fileName, sourcePath, targetPath);
 
-            try { 
-                ClientContext ctx =  getProjectSpCtx(ETLUri);
+            try {
+                ClientContext ctx = getProjectSpCtx(ETLUri);
                 if (ctx != null)
                 {
                     List<CsvRecord> records = GetRecordsFromCsv(csvPath);
                     List spList = ctx.Web.Lists.GetByTitle(ConfigurationManager.AppSettings["ListName"]);
 
                     //if(refresh)
-                    DeleteListItem(spList, ctx);
+                    //DeleteListItem(spList, ctx);
 
                     foreach (CsvRecord record in records)
                     {
                         CamlQuery query = new CamlQuery();
-                        query.ViewXml = String.Format("@<View><Query><Where><Eq><FieldRef Name=\"Title\" /><Value Type=\"Text\">{0}</Value></Eq></Where></Query></View>", record.Project);
+                        query.ViewXml = String.Format("@<View><Query><Where><Eq><FieldRef Name=\"Title\" /><Value Type=\"Text\">{0}</Value></Eq></Where></Query><RowLimit>10</RowLimit></View>", record.Project);
                         var existingMappings = spList.GetItems(query);
                         ctx.Load(existingMappings);
                         ctx.ExecuteQuery();
@@ -74,7 +74,7 @@ namespace ImportListFromCSV
                         {
                             case 0:
                                 //No records found, needs to be added
-                                AddNewListItem(record, spList, ctx);
+                                    AddNewListItem(record, spList, ctx);
                                 break;
                             default:
                                 //An existing record was found - continue with next item
@@ -88,13 +88,10 @@ namespace ImportListFromCSV
             {
                 Trace.TraceError("Failed: " + ex.Message);
                 Trace.TraceError("Stack Trace: " + ex.StackTrace);
-             
-
-
             }
         }
 
-        
+
         public static void CopyFileToSP(string fileName, string sourcePath, string targetPath)
         {
             string sourceFile = System.IO.Path.Combine(sourcePath, fileName);
@@ -106,9 +103,9 @@ namespace ImportListFromCSV
 
         public static void DeleteListItem(List spList, ClientContext ctx)
         {
-            
+
             ListItemCollection listItems = spList.GetItems(CamlQuery.CreateAllItemsQuery());
-            ctx.Load(listItems,eachItem => eachItem.Include(item => item, item => item["ID"]));
+            ctx.Load(listItems, eachItem => eachItem.Include(item => item, item => item["ID"]));
             ctx.ExecuteQuery();
             var totalListItems = listItems.Count;
             if (totalListItems > 0)
@@ -121,69 +118,9 @@ namespace ImportListFromCSV
                 }
             }
         }
-    
-        public static void AddNewListItem(ITLRecord record, List spList, ClientContext clientContext, string LookupList)
-        {
-            Dictionary<string, object> itemFieldValues = new Dictionary<string, object>();
-            
-            PropertyInfo[] properties = typeof(CsvRecord).GetProperties();
-            foreach (PropertyInfo property in properties)
-            {
-                object propValue = property.GetValue(record, null);
-                if (!String.IsNullOrEmpty(propValue.ToString()))
-                {
-                    Field matchingField = spList.Fields.GetByInternalNameOrTitle(property.Name);
-                    clientContext.Load(matchingField);
-                    clientContext.ExecuteQuery();
 
-                    switch (matchingField.FieldTypeKind)
-                    {
-                        case FieldType.User:
-                            FieldUserValue userFieldValue = GetUserFieldValue(propValue.ToString(), clientContext);
-                            if (userFieldValue != null)
-                                itemFieldValues.Add(matchingField.InternalName, userFieldValue);
-                            else
-                                throw new Exception("User field value could not be added: " + propValue.ToString());
-                            break;
-                        case FieldType.Lookup:
-                            FieldLookupValue lookupFieldValue = GetLookupFieldValue(propValue.ToString(),
-                                ConfigurationManager.AppSettings["LookupListName"].ToString(),
-                                clientContext);
-                            if (lookupFieldValue != null)
-                                itemFieldValues.Add(matchingField.InternalName, lookupFieldValue);
-                            else
-                                throw new Exception("Lookup field value could not be added: " + propValue.ToString());
-                            break;
-                        case FieldType.Invalid:
-                            switch (matchingField.TypeAsString)
-                            {
-                                default:
-                                    //Code for publishing site columns
-                                    continue;
-                            }
-                        default:
-                            itemFieldValues.Add(matchingField.InternalName, propValue);
-                            break;
-                    }
-                }
-            }
-
-            //Add new item to list
-            ListItemCreationInformation creationInfo = new ListItemCreationInformation();
-            ListItem oListItem = spList.AddItem(creationInfo);
-
-            foreach (KeyValuePair<string, object> itemFieldValue in itemFieldValues)
-            {
-                //Set each field value
-                oListItem[itemFieldValue.Key] = itemFieldValue.Value;
-            }
-            //Persist changes
-            oListItem.Update();
-            clientContext.ExecuteQuery();
-        }
-    
-        public static void AddNewListItem(CsvRecord record, List spList, ClientContext clientContext) { 
-
+        public static void AddNewListItem(CsvRecord record, List spList, ClientContext clientContext) {
+            Int32 recordCount = 0;
             Dictionary<string, object> itemFieldValues = new Dictionary<string, object>();
             //Use reflection to iterate through the record's properties
             PropertyInfo[] properties = typeof(CsvRecord).GetProperties();
@@ -244,37 +181,32 @@ namespace ImportListFromCSV
 
         public static List<CsvRecord> GetRecordsFromCsv(string csvPath)
         {
-            List<CsvRecord> records = new List<CsvRecord>();
+            try
+            {
+                List<CsvRecord> records = new List<CsvRecord>();
             using (var sr = new StreamReader(csvPath))
             {
                 using (var csvReader = new CsvReader(sr))
                 {
+                    //csvReader.Configuration.HeaderValidated(false);
                     csvReader.Configuration.TrimOptions = TrimOptions.Trim;
                     csvReader.Configuration.RegisterClassMap<ProjectKPIMap>();
+
                     records = csvReader.GetRecords<CsvRecord>().ToList();
                 }
             }
 
             return records;
         }
-
-        public static List<ITLRecord> GetRecordsFromITLCsv(string csvPath)
-        {
-            List<ITLRecord> records = new List<ITLRecord>();
-            using (var sr = new StreamReader(csvPath))
-            {
-                using (var csvReader = new CsvReader(sr))
-                {
-                    csvReader.Configuration.TrimOptions = TrimOptions.Trim;
-                    csvReader.Configuration.RegisterClassMap<ProjectITLMap>();
-                    records = csvReader.GetRecords<ITLRecord>().ToList();
-                }
+           catch (Exception ex)
+            {         
+                throw ex;
             }
+}
 
-            return records;
-        }
 
-        public static FieldUserValue GetUserFieldValue(string userName, ClientContext clientContext)
+
+    public static FieldUserValue GetUserFieldValue(string userName, ClientContext clientContext)
         {
             //Returns first principal match based on user identifier (display name, email, etc.)
             ClientResult<PrincipalInfo> principalInfo = Utility.ResolvePrincipal(
@@ -348,15 +280,6 @@ namespace ImportListFromCSV
             }
 
             ctx.Credentials = new SharePointOnlineCredentials(accountName, accountPwd);
-
-            //using (ClientContext ctx = new ClientContext(UriProject)
-            //{
-            //Credentials = new SharePointOnlineCredentials(accountName, accountPwd)
-            //})
-
-            //ClientContext ctx = new ClientContext(UriProject);
-            //ctx.Credentials = new SharePointOnlineCredentials(item, secureString));
-
             return ctx;
         }
 
@@ -405,6 +328,9 @@ namespace ImportListFromCSV
         }
     }
 }
+
+
+
 
 
 

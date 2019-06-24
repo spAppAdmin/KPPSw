@@ -22,9 +22,12 @@ using CsvHelper.Configuration;
 using System.Reflection;
 using System.Linq.Expressions;
 using System.Net;
-using System.Diagnostics.Tracing;
+using System.Diagnostics.Tracing;                                                                                                                                                                                               
 using System.Web.Script.Serialization;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+using System.ComponentModel;
+using CsvHelper.TypeConversion;
+using cvsCnfig = CsvHelper.TypeConversion;
+
 namespace csvUploadWeb.Pages
 {
     public partial class upload : System.Web.UI.Page
@@ -48,10 +51,15 @@ namespace csvUploadWeb.Pages
 
         protected void Page_Load(object sender, EventArgs e)
         {
-                  getProjectList();
+                 getProjectList();
+
+                if (!this.IsPostBack)
+                {
+             //       ModalPopupExtender1.Show();
+                }
+
         }
                                                                                
-
         protected void Button1_Click(object sender, EventArgs e)
         {
             try
@@ -60,14 +68,15 @@ namespace csvUploadWeb.Pages
                 var ctx = spContext.CreateUserClientContextForSPHost();
 
                 var projectURL = txtProjURL.Text;
-                var file = csvFile.Value.ToString();
+               // var file = csvFile.Text.ToString();
+                var file = "c:\\temp\\ITL.csv";
+
                 var listName = ddTargetList.SelectedValue;
                 var path = Path.Combine("@", file);
                 string fileNameWoExt = Path.GetFileNameWithoutExtension(file);
                 string fileNamewExt = Path.GetFileName(file);
                 string filepath = Path.GetFullPath(file);
-                string fileExt = Path.GetExtension(file);
-                string csvPath = file;
+                                string csvPath = file;
                 Uri projSiteUrl = new Uri(projectURL);
                 var lookup = "CostCodeList";
                 string lookupFieldName = "AreaName_x002b_SubTask";
@@ -77,59 +86,62 @@ namespace csvUploadWeb.Pages
 
                 switch (action)
                 {
-                    case "Delete":
-                        ActionDeleteAllListItems(listName, projSiteUrl);
-                        break;
-                    case "DeleteCSV":
-                        recordCount = ActionDeleteCSVListItems(listName, projSiteUrl, csvPath);
-                        break;
+                    
                     case "AddNew":
                         recordCount = ActionAddNewListItems(csvPath, projSiteUrl, action, listName, fileNamewExt, lookup, lookupFieldName, lookupFieldType);
+                        clientMessage(this.Page, action + " Completed" + recordCount + " Loaded");
                         break;
                     case "AddAll":
                         recordCount = ActionAddAllListItems(csvPath, projSiteUrl, action, listName, fileNamewExt, lookup, lookupFieldName, lookupFieldType);
                         break;
                     case "Update":
-                        recordCount = ActionUpdateListItems(csvPath, projSiteUrl, action, listName, fileNamewExt, lookup, lookupFieldName, lookupFieldType);
+                         recordCount = ActionUpdateListItems(csvPath, projSiteUrl, action, listName, fileNamewExt, lookup, lookupFieldName, lookupFieldType);
                         break;
+                    case "Delete":
+                        ActionDeleteCSVListItems(listName, projSiteUrl, csvPath);
+                        recordCount = ActionDeleteCSVListItems(listName, projSiteUrl, csvPath);
+                        break;
+                    case "DeleteAll":
+                        ActionDeleteAllListItems(listName, projSiteUrl);
+
+                        break;
+
                 }
 
 
-                clientMessage(this.Page, action + "cooplete");
+                clientMessage(this.Page, action + " Completed" + recordCount + " Loaded");
 
             }
            
             catch(Exception ex)
             {
                 HandleException(this.Page, ex);
+                SPL.WriteHistoryToLog();
+
+
+
+                
             }
         }
-
-
-     
-        /// <summary>
-        /// //////////Messaging
-        /// </summary>
-        /// <param name="page"></param>
-        /// <param name="ex"></param>
 
         public static void HandleException(Page page, Exception ex)
         {
             var message = new JavaScriptSerializer().Serialize(ex.Message.ToString());
             var script = string.Format("alert({0});", message);
-            ScriptManager.RegisterClientScriptBlock(page, page.GetType(), "", "alert('" + message + "');", true);
-            ScriptManager.RegisterClientScriptBlock(page, page.GetType(), "ssss", script, true);
+            ScriptManager.RegisterClientScriptBlock(page, page.GetType(), "DisplaysMsg", script, true);
+
+
         }
 
-
-        public static void clientMessage(Page page, string msgx)
+        public static void clientMessage(Page page, string msg)
         {
-            var message = new JavaScriptSerializer().Serialize(msgx);
-            var script = string.Format("alert({0});",msgx);
-            ScriptManager.RegisterClientScriptBlock(page, page.GetType(), "", "alert('" + msgx + "');", true);
-            ScriptManager.RegisterClientScriptBlock(page, page.GetType(), "ssss", script, true);
+            var message = new JavaScriptSerializer().Serialize(msg.ToString());
+            var script = string.Format("alert({0});", message);
+            ScriptManager.RegisterClientScriptBlock(page, page.GetType(), "DisplayMsg", script, true);
+
         }
-       
+
+
         public static Int32 ActionDeleteAllListItems(string listName, Uri projSiteURI) {
             Int32 rtnRecord = 0;
             ClientContext ctx = getProjectSpCtx(projSiteURI);
@@ -244,6 +256,7 @@ namespace csvUploadWeb.Pages
 
                 if (ctx != null)
                 {
+
                     List<ITLRecord> records = GetRecordsFromITLCsv(csvPath);
                     List spList = ctx.Web.Lists.GetByTitle(listName);
 
@@ -273,7 +286,7 @@ namespace csvUploadWeb.Pages
                     }
 
                 }
-                return recordCount;
+                return recordCount;//////////////////////////////////////////////////
             }
             catch (Exception ex)
             {
@@ -317,17 +330,16 @@ namespace csvUploadWeb.Pages
             }
         }
 
-
         public void NullException(object sender, EventArgs e)
         {
             throw new NotImplementedException();
         }
 
-
         public static void AddNewListItem(ITLRecord record, List spList, ClientContext clientContext, string LookupList, string lookupFieldName, string lookupFieldType)
         {
             try
             {
+                Int32 recordCount = 0;
                 Dictionary<string, object> itemFieldValues = new Dictionary<string, object>();
                 PropertyInfo[] properties = typeof(ITLRecord).GetProperties();
                 foreach (PropertyInfo property in properties)
@@ -335,7 +347,7 @@ namespace csvUploadWeb.Pages
                     object propValue = property.GetValue(record, null);
 
                     if (String.IsNullOrEmpty(propValue.ToString())) {
-                           throw new Exception(propValue.ToString() + " Column has blank values");
+                    //throw new Exception(propValue.ToString() + " Column has blank values");
                     }
 
                     if (!String.IsNullOrEmpty(propValue.ToString()))
@@ -386,11 +398,31 @@ namespace csvUploadWeb.Pages
                 oListItem.Update();
                 clientContext.ExecuteQuery();
             }
+
+
+            catch (IndexOutOfRangeException ex)
+            {
+                throw ex;
+            }
+
+
+            catch (InvalidOperationException ex)
+            {
+                throw ex;
+            }
+
+            catch (ArgumentNullException ex) {
+                throw ex;
+            }
+
             catch (Exception ex)
             {
                 throw ex;
             }
         }
+
+
+
 
         public static List<ITLRecord> GetRecordsFromITLCsv(string csvPath)
         {
@@ -403,21 +435,13 @@ namespace csvUploadWeb.Pages
                     {
                         HasHeaderRecord = true,
                         HeaderValidated = null,
-                        //MissingFieldFound = null,
-                         
-                        IgnoreBlankLines = true
-                        
-
+                        MissingFieldFound = null,
+                        TrimOptions = TrimOptions.Trim
                     });
 
-                    using (parser)
-                    {
-                        //csvReader.Configuration.HeaderValidated(false);
-                        parser.Configuration.TrimOptions = TrimOptions.Trim;
+                    using (parser) { 
                         parser.Configuration.RegisterClassMap<ProjectITLMap>();
-                        parser.Configuration.HeaderValidated = null;
-                        parser.Configuration.MissingFieldFound = null;
-                        //new NullableConverter(typeof(string)).ConvertFromString(new TypeConverterOptions(), "NA")
+                       //NullableConverter(typeof(string)).ConvertFromString(new TypeConverterOptions(), "NA")
                         records = parser.GetRecords<ITLRecord>().ToList();
                     }
                 }
@@ -425,7 +449,8 @@ namespace csvUploadWeb.Pages
                 return records;
             }
             catch (Exception ex)
-            {         
+            {
+                var c = ex.Data.Values;
                 throw ex;
             }
             
@@ -433,7 +458,7 @@ namespace csvUploadWeb.Pages
 
         public static FieldUserValue GetUserFieldValue(string userName, ClientContext clientContext)
         {
-            //Returns first principal match based on user identifier (display name, email, etc.)
+          //Returns first principal match based on user identifier (display name, email, etc.)
             ClientResult<PrincipalInfo> principalInfo = Utility.ResolvePrincipal(
                 clientContext, //context
                 clientContext.Web, //web
@@ -486,9 +511,6 @@ namespace csvUploadWeb.Pages
                 lookupValue.LookupId = int.Parse(item["ID"].ToString());
                 return lookupValue;
             }
-
-
-
             return null;
         }
 
@@ -550,8 +572,8 @@ namespace csvUploadWeb.Pages
             string accountName = ConfigurationManager.AppSettings["AccountName"];
             char[] pwdChars = ConfigurationManager.AppSettings["AccountPwd"].ToCharArray();
             SecureString accountPwd = new SecureString();
-            for (int i = 0; i < (int)pwdChars.Length; i++)
-            {
+            for (int i = 0; i < (int)pwdChars.Length; i++)                                  
+            {   
                 accountPwd.AppendChar(pwdChars[i]);
             }
 
@@ -559,6 +581,8 @@ namespace csvUploadWeb.Pages
 
             return ctx;
         }
+
+        
 
     }
 
@@ -617,7 +641,7 @@ namespace csvUploadWeb.Pages
                 m._msg = "X";
                 
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
             }
         }

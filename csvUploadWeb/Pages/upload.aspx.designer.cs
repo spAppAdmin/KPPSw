@@ -82,8 +82,9 @@ namespace csvUploadWeb.Pages {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText csvFile;
+        protected global::System.Web.UI.WebControls.TextBox csvFile;
         
+
         /// <summary>
         /// rbAction control.
         /// </summary>
@@ -92,7 +93,16 @@ namespace csvUploadWeb.Pages {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RadioButtonList rbAction;
-        
+
+        /// <summary>
+        /// ModalPopupExtender1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::AjaxControlToolkit.ModalPopupExtender ModalPopupExtender1;
+
         /// <summary>
         /// ddTargetList control.
         /// </summary>

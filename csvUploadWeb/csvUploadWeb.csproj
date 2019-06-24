@@ -221,8 +221,8 @@
     <Content Include="Pages\Default.aspx" />
     <Content Include="Scripts\app.css" />
     <Content Include="App.config" />
-    <Content Include="Content\ITL.csv" />
     <Content Include="Properties\webjobs-list.json" />
+    <Content Include="ITL.csv" />
     <None Include="Properties\PublishProfiles\csvUpload - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.9.1.intellisense.js" />
     <Content Include="Pages\upload.aspx" />
@@ -276,6 +276,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Content\" />
     <Folder Include="Models\" />
     <Folder Include="Services\" />
   </ItemGroup>
