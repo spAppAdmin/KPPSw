@@ -145,6 +145,9 @@
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.6.5\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="OfficeDevPnP.Core, Version=3.10.1906.0, Culture=neutral, PublicKeyToken=5e633289e95c321a, processorArchitecture=MSIL">
       <HintPath>..\packages\SharePointPnPCoreOnline.3.10.1906\lib\net45\OfficeDevPnP.Core.dll</HintPath>
     </Reference>
@@ -218,12 +221,15 @@
     <Content Include="Global.asax" />
     <Content Include="Images\siteicon.png" />
     <Content Include="Images\upload2.png" />
+    <Content Include="nLog.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Pages\Default.aspx" />
     <Content Include="Scripts\app.css" />
     <Content Include="App.config" />
     <Content Include="Properties\webjobs-list.json" />
     <Content Include="ITL.csv" />
-    <None Include="Properties\PublishProfiles\csvUpload - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\csvUploadTool - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.9.1.intellisense.js" />
     <Content Include="Pages\upload.aspx" />
     <Content Include="Scripts\app.js" />
@@ -234,6 +240,7 @@
     <Content Include="Scripts\jquery.lineProgressbar.js" />
     <Content Include="Images\upload.png" />
     <Content Include="siteicon.png" />
+    <Content Include="uploader.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -259,6 +266,13 @@
     <Compile Include="SharePointContext.cs" />
     <Compile Include="spHelper.cs" />
     <Compile Include="TokenHelper.cs" />
+    <Compile Include="uploader.aspx.cs">
+      <DependentUpon>uploader.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="uploader.aspx.designer.cs">
+      <DependentUpon>uploader.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Upload.cs" />
   </ItemGroup>
   <ItemGroup>
