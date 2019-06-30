@@ -240,7 +240,6 @@
     <Content Include="Scripts\jquery.lineProgressbar.js" />
     <Content Include="Images\upload.png" />
     <Content Include="siteicon.png" />
-    <Content Include="uploader.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -266,13 +265,6 @@
     <Compile Include="SharePointContext.cs" />
     <Compile Include="spHelper.cs" />
     <Compile Include="TokenHelper.cs" />
-    <Compile Include="uploader.aspx.cs">
-      <DependentUpon>uploader.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="uploader.aspx.designer.cs">
-      <DependentUpon>uploader.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Upload.cs" />
   </ItemGroup>
   <ItemGroup>
