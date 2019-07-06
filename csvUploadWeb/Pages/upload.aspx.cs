@@ -28,14 +28,17 @@ using System.ComponentModel;
 using CsvHelper.TypeConversion;
 using cvsCnfig = CsvHelper.TypeConversion;
 using NLog;
-
+using System.Diagnostics;
 
 namespace csvUploadWeb.Pages
 {
     public partial class upload : System.Web.UI.Page
     {
+        public static Stopwatch sw;
+
         protected void Page_PreInit(object sender, EventArgs e)
         {
+            
             Uri redirectUrl;
             switch (SharePointContextProvider.CheckRedirectionStatus(Context, out redirectUrl))
             {
@@ -51,21 +54,29 @@ namespace csvUploadWeb.Pages
             }
         }
 
-        protected void Page_Load(object sender, EventArgs e)
+        protected void Page_Load(object sender, EventArgs e) 
         {
+            //Get projects catalog list
             getProjectList();
 
             if (!this.IsPostBack)
             {
-                //       ModalPopupExtender1.Show();
+
             }
+            
 
         }
+
+
+
+     
 
         protected void Button1_Click(object sender, EventArgs e)
         {
             try
             {
+
+                
                 var spContext = SharePointContextProvider.Current.GetSharePointContext(Context);
                 var ctx = spContext.CreateUserClientContextForSPHost();
 
@@ -80,31 +91,33 @@ namespace csvUploadWeb.Pages
                 string filepath = Path.GetFullPath(file);
                 string csvPath = file;
                 Uri projSiteUrl = new Uri(projectURL);
+
                 var lookup = "CostCodeList";
                 string lookupFieldName = "AreaName_x002b_SubTask";
                 string lookupFieldType = "Calculated";
+
                 var action = rbAction.SelectedValue;
                 Int32 recordCount = 0;
 
                 switch (action)
                 {
 
-                    case "AddNew":
+                    case "AddNew":// This will add an entry if it doesn't exist
                         recordCount = ActionAddNewListItems(csvPath, projSiteUrl, action, listName, fileNamewExt, lookup, lookupFieldName, lookupFieldType);
                         clientMessage(this.Page, action + " Completed" + recordCount + " Loaded");
                         break;
-                    case "AddAll":
+                    case "AddAll"://This will force the creation of a brand new entry even if it already exists.
                         recordCount = ActionAddAllListItems(csvPath, projSiteUrl, action, listName, fileNamewExt, lookup, lookupFieldName, lookupFieldType);
                         break;
-                    case "Update":
+                    case "Update":// This will add an entry if it doesn't exist, but will only update if it does exist.
                         recordCount = ActionUpdateListItems(csvPath, projSiteUrl, action, listName, fileNamewExt, lookup, lookupFieldName, lookupFieldType);
                         break;
-                    case "Delete":
+                    case "Delete":// // This will delete 1 or MANY entries in the list
                         ActionDeleteCSVListItems(listName, projSiteUrl, csvPath);
                         recordCount = ActionDeleteCSVListItems(listName, projSiteUrl, csvPath);
                         break;
-                    case "DeleteAll":
-                        ActionDeleteAllListItems(listName, projSiteUrl);
+                    case "DeleteAll"://Caution - this will delete all records in list
+                        recordCount = ActionDeleteAllListItems(listName, projSiteUrl);
 
                         break;
 
@@ -117,6 +130,7 @@ namespace csvUploadWeb.Pages
 
             catch (Exception ex)
             {
+                
                 HandleException(this.Page, ex);
                 SPL.LogEntries.Add("Event => ErrorMessage: " + ex.Message + " ErrorSource: " + ex.Source);
 
@@ -124,6 +138,26 @@ namespace csvUploadWeb.Pages
 
             }
         }
+      
+
+        private static void KillExistingProcesses()
+        {
+            Process[] p = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
+            foreach (var pro in p)
+            {
+                pro.Kill();
+            }
+        }
+
+
+        protected void KillProcess(object sender, EventArgs e)
+        {
+            KillExistingProcesses();
+            
+
+
+        }
+
 
         public static void HandleException(Page page, Exception ex)
         {
@@ -137,7 +171,7 @@ namespace csvUploadWeb.Pages
             sb.AppendLine(trace);
             var message = sb.ToString();
 
-            var script = string.Format("alert({0});", message);
+            var script = string.Format("alert({0});", msg);
             ScriptManager.RegisterClientScriptBlock(page, page.GetType(), "DisplaysMsg", script, true);
 
 
@@ -246,8 +280,8 @@ namespace csvUploadWeb.Pages
                                 ctx.ExecuteQuery();
                             }
                             AddNewListItem(record, spList, ctx, lookup, lookupFieldName, lookupFieldType);
-
                         }
+                        recordCount = totalListItems;
                     }
                 }
                 return recordCount;
@@ -278,13 +312,15 @@ namespace csvUploadWeb.Pages
 
                     foreach (ITLRecord record in records)
                     {
+                        recordCount++;
+
                         CamlQuery query = new CamlQuery();
                         query.ViewXml = String.Format("@<View><Query><Where><Eq><FieldRef Name=\"Title\" /><Value Type=\"Text\">{0}</Value></Eq></Where></Query></View>", record.Title);
                         var existingMappings = spList.GetItems(query);
                         ctx.Load(existingMappings);
                         ctx.ExecuteQuery();
 
-                        recordCount = existingMappings.Count;
+                        //recordCount = existingMappings.Count;
 
                         switch (existingMappings.Count)
                         {
@@ -322,23 +358,21 @@ namespace csvUploadWeb.Pages
                 {
                     List<ITLRecord> records = GetRecordsFromITLCsv(csvPath);
                     List spList = ctx.Web.Lists.GetByTitle(listName);
-
+                    recordCount = records.Count;
 
                     //Checks to see if an item already exists with the same title and preserves
-                    
+
                     foreach (ITLRecord record in records)
                     {
-                        i = i++;
                         CamlQuery query = new CamlQuery();
                         query.ViewXml = String.Format("@<View><Query><Where><Eq><FieldRef Name=\"Title\" /><Value Type=\"Text\">{0}</Value></Eq></Where></Query></View>", record.Title);
                         var existingMappings = spList.GetItems(query);
                         ctx.Load(existingMappings);
                         ctx.ExecuteQuery();
-                        recordCount = existingMappings.Count;
                         AddNewListItem(record, spList, ctx, lookup, lookupFieldName, lookupFieldType);
                     }
                 }
-                return i;
+                return recordCount;
             }
 
             catch (IndexOutOfRangeException ex)
@@ -367,6 +401,7 @@ namespace csvUploadWeb.Pages
                 throw;
             }
 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 
 
             catch (Exception ex)
@@ -381,6 +416,22 @@ namespace csvUploadWeb.Pages
         //    throw new NotImplementedException();
         //}
 
+
+       public static void addOrUpdate(Dictionary<int, int> dic, int key, int newValue)
+        {
+            int val;
+            if (dic.TryGetValue(key, out val))
+            {
+                // yay, value exists!
+                dic[key] = val + newValue;
+            }
+            else
+            {
+                // darn, lets add the value
+                dic.Add(key, newValue);
+            }
+        }
+
         public static void AddNewListItem(ITLRecord record, List spList, ClientContext clientContext, string LookupList, string lookupFieldName, string lookupFieldType)
         {
             try
@@ -388,13 +439,16 @@ namespace csvUploadWeb.Pages
                 Int32 recordCount = 0;
                 Dictionary<string, object> itemFieldValues = new Dictionary<string, object>();
                 PropertyInfo[] properties = typeof(ITLRecord).GetProperties();
+                
                 foreach (PropertyInfo property in properties)
                 {
                     object propValue = property.GetValue(record, null);
 
-                     if (String.IsNullOrEmpty(propValue.ToString())) {
-                         throw new Exception(propValue.ToString());
+                    if (String.IsNullOrEmpty(propValue.ToString()))
+                    {
+                        //throw new Exception("Error with " + property.Name +"-"+ propValue.ToString());
                     }
+
 
                     if (!String.IsNullOrEmpty(propValue.ToString()))
                     {
@@ -402,8 +456,11 @@ namespace csvUploadWeb.Pages
                         clientContext.Load(matchingField);
                         clientContext.ExecuteQuery();
 
+                        //itemFieldValues.Values.sec
+
                         switch (matchingField.FieldTypeKind)
                         {
+        
                             case FieldType.User:
                                 FieldUserValue userFieldValue = GetUserFieldValue(propValue.ToString(), clientContext);
                                 if (userFieldValue != null)
@@ -413,6 +470,15 @@ namespace csvUploadWeb.Pages
                                 break;
 
                             case FieldType.Lookup:
+
+                                if (property.Name == "Predecessors")
+                                {
+                                    LookupList = "ITL";
+                                    lookupFieldType = "string";
+                                    lookupFieldName = "Title";
+                                }
+
+                                
                                 FieldLookupValue lookupFieldValue = GetLookupFieldValue(propValue.ToString(), LookupList, lookupFieldName, lookupFieldType, clientContext);
                                 if (lookupFieldValue != null)
                                     itemFieldValues.Add(matchingField.InternalName, lookupFieldValue);
@@ -428,25 +494,42 @@ namespace csvUploadWeb.Pages
                                 }
                             default:
                                 itemFieldValues.Add(matchingField.InternalName, propValue);
+                                recordCount = itemFieldValues.Count;
+                                
                                 break;
                         }
                     }
                 }
                 //Add new item to list
+
+
+
                 ListItemCreationInformation creationInfo = new ListItemCreationInformation();
                 sp.ListItem oListItem = spList.AddItem(creationInfo);
+                
+           
+                var d = new DateTime(2000, 1, 1);
 
-                int i = 0;
                 foreach (KeyValuePair<string, object> itemFieldValue in itemFieldValues)
                 {
-                    //Set each field value
-                    oListItem[itemFieldValue.Key] = itemFieldValue.Value;
+
+                    if (itemFieldValue.Value.ToString()  ==  "1/1/2000 12:00:00 AM")
+    
+                    {
+                            //Set each field value
+                            oListItem[itemFieldValue.Key] = null;
+                        }
+                    else
+                    {
+                        oListItem[itemFieldValue.Key] = itemFieldValue.Value;
+                    }
                 }
                 oListItem.Update();
                 clientContext.ExecuteQuery();
+                
             }
 
-
+            
             catch (IndexOutOfRangeException ex)
             {
                 ex.Data.Add("UserMessage", ex.InnerException.ToString() + "," + ex.StackTrace.ToString());
@@ -461,7 +544,8 @@ namespace csvUploadWeb.Pages
                 throw;
             }
 
-            catch (ArgumentNullException ex) {
+            catch (ArgumentNullException ex)
+            {
                 ex.Data.Add("UserMessage", ex.InnerException.ToString() + "," + ex.StackTrace.ToString());
                 throw;
             }
@@ -477,10 +561,16 @@ namespace csvUploadWeb.Pages
             {
                 ex.Data.Add("UserMessage", ex.InnerException.ToString() + "," + ex.StackTrace.ToString());
                 throw;
+            }
+
+            catch (Exception ex)
+            {
+                ex.Data.Add("UserMessage", ex.InnerException.ToString() + "," + ex.StackTrace.ToString());
+                throw;
 
             }
 
-         
+
         }
 
         public static class ForEachHelper
@@ -516,6 +606,10 @@ namespace csvUploadWeb.Pages
             }
         }
 
+
+        //public IEnumerable<ITLRecord>
+        //{
+
         public static List<ITLRecord> GetRecordsFromITLCsv(string csvPath)
         {
             try
@@ -527,20 +621,31 @@ namespace csvUploadWeb.Pages
                     {
                         HasHeaderRecord = true,
                         HeaderValidated = null,
-                        MissingFieldFound = null,
+                        //MissingFieldFound = " ",
                         //UseNewObjectForNullReferenceMembers = true,
-                        TrimOptions = TrimOptions.Trim,
+                        //TrimOptions = TrimOptions.Trim,
+                        //ShouldSkipRecord = true;
+                        //IgnoreBlankLines = false
+
 
                         //  ReadingExceptionOccurred = (ex, row) => errors.Add(string.Format("Line[{0}]: {1}", row.Row, ex.Message))
                     });
 
                     using (parser) {
-                        parser.Configuration.TypeConverterOptionsCache.GetOptions<string>().NullValues.Add("null");
-                        parser.Configuration.TypeConverterOptionsCache.GetOptions<DateTime?>().NullValues.Add("null");
-                        parser.Configuration.TypeConverterOptionsCache.GetOptions<DateTime?>().NullValues.Add("");
-                        parser.Configuration.ReadingExceptionOccurred = ReadingExceptionOccurred;
 
                         parser.Configuration.RegisterClassMap<ProjectITLMap>();
+                        //parser.Configuration.TypeConverterOptionsCache.GetOptions<string>().NullValues.Add("");
+                        //parser.Configuration.TypeConverterOptionsCache.GetOptions<DateTime?>().NullValues.Add("null");
+                        //parser.Configuration.TypeConverterOptionsCache.GetOptions<DateTime?>().NullValues.Add("");
+                        //parser.Configuration.MissingFieldFound = (headerNames, index, context) =>
+                        // {
+                        //SPL.LogEntries.Add("Event => ErrorMessage: " + ex.Message + " ErrorSource: " + ex.Source);.WriteLine($"Field with names ['{string.Join("', '", headerNames)}'] at index '{index}' was not found. );
+                        //};
+
+                        parser.Configuration.ReadingExceptionOccurred = ReadingExceptionOccurred;
+                        //parser.Configuration.MissingFieldFound( = ReadingExceptionOccurred;
+
+                        
                         //NullableConverter(typeof(string)).ConvertFromString(new TypeConverterOptions(), "NA")
                         records = parser.GetRecords<ITLRecord>().ToList();
                     }
@@ -568,7 +673,6 @@ namespace csvUploadWeb.Pages
             throw new NotImplementedException();
 
         }
-
 
         public static FieldUserValue GetUserFieldValue(string userName, ClientContext clientContext)
         {
@@ -601,6 +705,19 @@ namespace csvUploadWeb.Pages
             }
             return null;
         }
+
+        //   public static string GetDateFieldValue(string dateValue, ClientContext clientContext)
+        //   {
+        //       if (dateValue == "1/1/2000")
+        //       {
+        //           return null;
+        //}
+        //       else
+        //       {
+        //           return dateValue;
+        //}
+        //}
+
 
         public static FieldLookupValue GetLookupFieldValue(string lookupName, string lookupListName, string lookupFieldName, string lookupFieldType, ClientContext clientContext)
         {
@@ -710,7 +827,6 @@ namespace csvUploadWeb.Pages
             protected InvalidDepartmentException(System.Runtime.Serialization.SerializationInfo info,
                 System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
         }
-
 
         public class LogWriter
         {

@@ -21,7 +21,7 @@
     <WorkflowPartId>{3c346dea-2123-4501-8493-e581c643cd07}</WorkflowPartId>
     <CspkgPartId>{21d2f5ab-e163-4d1c-9730-dac52766e678}</CspkgPartId>
     <SqlPackagePartId>{95c1c52e-42c8-45ea-b700-8bef690423a5}</SqlPackagePartId>
-    <ActivePublishProfile>csvUpload - Web Deploy</ActivePublishProfile>
+    <ActivePublishProfile>csvUploadTool - Web Deploy</ActivePublishProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

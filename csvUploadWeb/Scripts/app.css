@@ -11,7 +11,36 @@
 }
 
 
+.info{
 
+     width:16px;
+     height:16px;
+     margin-top:0px;
+     padding-top:0px;
+}
+
+.text{ 
+    text-align:left;
+    vertical-align:middle;
+    margin-top:0px;
+}
+
+.bimg {
+    background-image: url("../Images/info.png");
+    background-repeat: no-repeat;
+    background-size: 15px;
+    background-position: left;
+    padding-left:20px;
+}
+
+
+.aimg {
+    background-image: url("../Images/alert.png");
+    background-repeat: no-repeat;
+    background-size: 15px;
+    background-position: left;
+    padding-left: 20px;
+}
 
 
 #progress {
@@ -63,16 +92,24 @@
     border-width: 0px;
     border-style: solid;
     border-color: black;
-    padding-top: 10px;
-    padding-left: 10px;
+    padding-top: 200px;
+    padding-left: 200px;
 
 }
 
 
-#frmtbl{ width:100%;}
+#frmtbl{ width:75%;}
+
+small{color:dodgerblue;}
+
+#frmtbl {
+ table-layout:auto;
+}
 
 #frmtbl tr td {
     padding: 10px;
+      white-space:nowrap;
+      border:solid 0px red;
 }
 
 
@@ -84,21 +121,13 @@
 
 
 b {
-    font-weight: bold;
+    font-weight:600;
     color: dodgerblue;
 }
 
 
 .code-content {
-    font-family: Consolas;
-    top: -3px;
-    clear: both;
-    border-color: #e5e5e5;
-    border-width: 1px;
-    border-style: solid;
-    position: relative;
-    padding: 5px;
-    margin: 10px;
+    
 }
 
 .result-panel {
@@ -188,6 +217,55 @@ b {
     height: 128px;
     width: 128px;
 }   
+
+
+/*jqueyrUI Themes*/
+
+
+.demoHeaders {
+    margin-top: 2em;
+}
+
+#dialog-link {
+    padding: .4em 1em .4em 20px;
+    text-decoration: none;
+    position: relative;
+}
+
+    #dialog-link span.ui-icon {
+        margin: 0 5px 0 0;
+        position: absolute;
+        left: .2em;
+        top: 50%;
+        margin-top: -8px;
+    }
+
+#icons {
+    margin: 0;
+    padding: 0;
+}
+
+    #icons li {
+        margin: 2px;
+        position: relative;
+        padding: 4px 0;
+        cursor: pointer;
+        float: left;
+        list-style: none;
+    }
+
+    #icons span.ui-icon {
+        float: left;
+        margin: 0 4px;
+    }
+
+.fakewindowcontain .ui-widget-overlay {
+    position: absolute;
+}
+
+select {
+    width: 200px;
+}
 
 
 

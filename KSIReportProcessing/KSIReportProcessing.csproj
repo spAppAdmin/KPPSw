@@ -106,6 +106,8 @@
     <None Include="Properties\PublishProfiles\KSIApp - Web Deploy %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\KSIApp - Web Deploy %284%29.pubxml" />
     <None Include="Properties\PublishProfiles\KSIApp - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\KSIReporting.pubxml" />
+    <None Include="Properties\PublishProfiles\KSIReportProcessing - Web Deploy.pubxml" />
     <None Include="Properties\webjob-publish-settings.json" />
   </ItemGroup>
   <ItemGroup>

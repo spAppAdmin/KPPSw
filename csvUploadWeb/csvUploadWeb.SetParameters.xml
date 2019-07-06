@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <setParameter name="IIS Web Application Name" value="Default Web Site/csvUploadWeb_deploy" />
+  <setParameter name="ClientId" value="c0d14878-854f-41cb-ba2f-638ea7eb2a00" />
+</parameters>

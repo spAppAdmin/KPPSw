@@ -8,38 +8,29 @@
     <title>SharePoint CSV Upload</title>
     <script src="//ajax.aspnetcdn.com/ajax/4.0/1/MicrosoftAjax.js" type="text/javascript"></script>
     <script type="text/javascript" src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.9.1.min.js"></script>      
+    <script src="../Scripts/jquery-ui-1.12.1.custom/jquery-ui.js"></script>
+    <script type="text/javascript" src="../Scripts/Timer.js"></script>
     <script src="../Scripts/app.js"></script>
+
     <link href="../Scripts/app.css" rel="stylesheet" />
+    <link href="../Scripts/timer.css" rel="stylesheet" />
+    <link href="../Scripts/jquery-ui-1.12.1.custom/jquery-ui-themes-1.12.1/jquery-ui.css" rel="stylesheet" />
+    <link href="../Scripts/jquery-ui-1.12.1.custom/jquery-ui-themes-1.12.1/jquery-ui.structure.css" rel="stylesheet" />
+    <link href="../Scripts/jquery-ui-1.12.1.custom/jquery-ui-themes-1.12.1/jquery-ui.theme.css" rel="stylesheet" />
+    <link href="../Scripts/jquery-ui-1.12.1.custom/jquery-ui-themes-1.12.1/themes/base/theme.css" rel="stylesheet" />
+
+   
+    
+
+
     </head>
 
     <body>
 
      <form id="frm" runat="server">
         <asp:ScriptManager ID="ScriptManager1" runat="server" ></asp:ScriptManager>
-
               
-     <ajaxToolkit:ModalPopupExtender ID="ModalPopupExtender1" runat="server" PopupControlID="pnlPopup" TargetControlID="btnInstructions" BackgroundCssClass="modalBackground" CancelControlID="btnHide" DropShadow="false" RepositionMode="RepositionOnWindowResize" ViewStateMode="Enabled"   ></ajaxToolkit:ModalPopupExtender>
-     <asp:Panel ID="pnlPopup" runat="server" CssClass="modalPopup" Width="600" Height="900"  HorizontalAlign="left">
-              
-                <h1>Instructions</h1>
-                <ul id="listInstructions">
-                    <li>List <a href="https://kineticsys.sharepoint.com/sites/projects/construction/SPP/000000000/Lists/Test%20Document%20Libraries/main.aspx?viewid=ad6bc77c%2Dafc8%2D47d2%2D96e1%2D8df38e233902" target="_blank" ><b> Structure</b></a>  CSV files <b>must contain</b> all fields in list (even if no data)</li>
-                    <li>Sample CSV File structure   <a href="https://kineticsys.sharepoint.com/sites/IntranetPortal/adm/ETL/Documents/ITL.CSV"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</q>target="_blank" >Valid CSV Example File </a><small></small></li>
-                    <li>Note: these fields types are <b>not</b> valid in the CSV file and not updatable:
-                        <ul>
-                            <li>Calculated Fields</li>
-                            <li>Other fields included in lookup (other than primary lookup field)</li>
-                            <li>System Fields (Modified, Created, Modified By, Created By etc.)</li>
-                        </ul>
-                    </li>
-                    <li>Date Fields should follow the dd/mm/yyyy format (e.g. 5/1/2019)</li>
-                    <li>CSV Values must match the target list field type.  For example "T" in a numerically defined field will throw an error. </li>
-                    <li>CSV Field Order is not neccessary but all fields need to be represented in the CSV file - even if the data is empty</li>
-                </ul>
-                <asp:Button ID="btnHide" runat="server" Text="Close" class="btnProcess" />
-          
-     </asp:Panel>
-       
+     
 
     <!-- Chrome control placeholder -->
      <div id="chrome_ctrl_placeholder"></div>
@@ -51,56 +42,62 @@
 
 
     <div id="Instructions">  
-        <asp:Button runat="server" ID="btnInstructions" Text="Instructions" CssClass="btnProcess" /> 
+        <a href="../instructions.html" target="_blank">Instructions</a>
     </div>
 
 
      <div id="msgHtml" class="msg"></div>
 
      <div id="MainContent">
+         
+           
 
-        <div class="tabContainer">
-                                                                                                                                                                                
-                    <div id="uploadCtl">
-                        <asp:UpdateProgress ID="updProgress" AssociatedUpdatePanelID="UpdatePanel" runat="server"   > 
+
+                    <div class="tabContainer">
+                        <asp:UpdateProgress ID="updProgress" AssociatedUpdatePanelID="UpdatePanel" runat="server"  > 
                                 <ProgressTemplate>      
-                                     <div id="progress">
-                                            <img src="../Images/ajax-loader.gif"  />
+                                     <div id="progress" style="text-align:center;">
+                                        <img src="../Images/ajax-loader.gif" id="imgProgress"  /><br />
+                                          <span id="sw_h">00</span>:
+                                            <span id="sw_m">00</span>:
+                                            <span id="sw_s">00</span>:
+                                            <span id="sw_ms">00</span>
+
                                     </div>
                                 </ProgressTemplate>
                             </asp:UpdateProgress>
-  
+                            
+
                             <asp:UpdatePanel ID="UpdatePanel" runat="server">
                                 <ContentTemplate>
-                                    <asp:Button ID="Button1_Click1" runat="server" Text="Process CSV" OnClick="Button1_Click" CssClass="btnProcess" Width="150" />
-                                    <asp:Label ID="msg" runat="server" Text=""></asp:Label>
+                                    <asp:Button ID="btnStart" runat="server" Text="Process CSV" OnClick="Button1_Click" CssClass="btnProcess" Width="150" OnClientClick=""  /><br /><br />
+                                   <!-- <asp:Button ID="btnKill" runat="server" Text="Stop Process" OnClick="KillProcess" CssClass="btnProcessStop" Width="150" OnClientClick="cancelPostBack();"  />-->
+                             
                                 </ContentTemplate>
                             </asp:UpdatePanel>         
 
-                        
-
-
-                        <table id="frmtbl">
+                            <table id="frmtbl">
                                 <tr>
                                     <td>File Path (must be CSV)<span style="color:red;">*</span></td>
                                     <td>
                                         <asp:TextBox ID="csvFile" runat="server" Width="300" ></asp:TextBox> 
-                                        <ajaxToolkit:TextBoxWatermarkExtender runat="server" TargetControlID="csvFile"  WatermarkText="File path (C:\\users\\temp\\load.csv)" id="wmCsvFile" />
+                                        <!--<ajaxToolkit:TextBoxWatermarkExtender runat="server" TargetControlID="csvFile"  WatermarkText="File path (C:\\users\\temp\\load.csv)" id="wmCsvFile" />-->
+                                        <small>Select local ("C:\temp\upload.csv") or server path ("\\kineticsys.sharepoint.com\sites\projects\construction\nocal\0000789631\Documents\upload.csv").  File is not uploaded.</small>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="width:30%;">
                                         Action <small>(Record transactions based on "Title" field)</small></td>
                                     <td>
-                                        <asp:RadioButtonList ID="rbAction" runat="server" CellPadding="0" CellSpacing="0">
-                                            <asp:ListItem Value="AddNew" Text="        &lt;span class=&quot;b&quot;&gt;New Records&lt;/span&gt;          (Only Records not in List but in CSV File added)" Selected="True"></asp:ListItem>
-                                            <asp:ListItem Value="AddAll" Text="        &lt;span class=&quot;b&quot;&gt;All records&lt;/span&gt;          (All records in CSV added - May create duplicates)"></asp:ListItem>
-                                            <asp:ListItem Value="Update" Text="          &lt;span class=&quot;b&quot;&gt;Update &lt;/span&gt;              (Records in CSV file and List Updated.  New Records in CSV File Added)"></asp:ListItem>
-                                            <asp:ListItem Value="Delete" Text="         &lt;span class=&quot;b&quot;&gt;Delete&lt;/span&gt;               (Records in CSV file and List Deleted - Rolback)"></asp:ListItem>
-                                            <asp:ListItem Value="DeleteAll" Text="  &lt;span class=&quot;b&quot;&gt;Delete All (Admin)&lt;/span&gt;  (Delete all List Records.  No CSV File required)"></asp:ListItem>
+
+                                        <asp:RadioButtonList ID="rbAction" runat="server" CellPadding="0" CellSpacing="0" Width="800px">
+                                            <asp:ListItem Value="AddNew"  Text="<span class='bimg'><b>New Records</b>   (Adds entry if it doesnt already exist in list)</span>" Selected="True"></asp:ListItem>
+                                            <asp:ListItem Value="AddAll"  Text="<span class='bimg'><b>All records</b>   (Force the creation of a brand new entry even if it already exists. Duplicates some records.)</span>"></asp:ListItem>
+                                            <asp:ListItem Value="Update"  Text="<span class='bimg'><b>Update</b>        (Add an entry if it doesn't exist, update if it does exist.)</span>"></asp:ListItem>
+                                            <asp:ListItem Value="Delete"  Text="<span class='bimg'><b>Delete</b>        (Delete records if exists from CSV - Rolback.)</span>"></asp:ListItem>
+                                            <asp:ListItem Value="DeleteAll"  Text="<span class='aimg'><b>Delete All</b>     (Delete all list records)</span>"></asp:ListItem>
                                         </asp:RadioButtonList>
-            
-                                    </td>
+                                </td>
                                 </tr>
                                 <tr>
                                     <td>Target List (currently only ITL is available but more will be added)<span style="color:red;">*</span></td>
@@ -110,27 +107,13 @@
                                             <asp:ListItem Value="RSP" Enabled="False"></asp:ListItem> 
                                             <asp:ListItem Value="Components"  Enabled="False"></asp:ListItem> 
                                         </asp:RadioButtonList>
-                                       
                                     </td>
                                 </tr>
                                   <tr><td>Project:<span style="color:red;"></span></td><td><asp:DropDownList ID="ddlProjName" runat="server"></asp:DropDownList></td></tr>
                                   <tr><td>Project Site:<span style="color:red;">*</span></td><td><asp:TextBox ID="txtProjURL" runat="server" Width="600"></asp:TextBox></td></tr>
-          
                            </table>
-                    </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-                 
-        </div>
-     </div>
-
-        
-        <!--</asp:Panel>-->
-    
-
-
-
-    
-
-            
-</form> 
- </body>
+                        </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+                    </div>
+                </form> 
+            </body>
     </html>

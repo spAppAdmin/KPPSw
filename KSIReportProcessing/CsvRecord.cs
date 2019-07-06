@@ -126,39 +126,51 @@ namespace ImportListFromCSV
             Map(m => m.DetailingBurnedRatio).Name("Detailing Burned Ratio").ConvertUsing(NullDecimalParser);
 
 
+
+
             Decimal? NullDecimalParser(IReaderRow row)
             {
-                try
-                {
-                    var rawValue = row.GetField(row.Context.CurrentIndex + 1);
-                    if (rawValue == "")
-                        return 0;
-                    else
-                    if (rawValue == null)
-                        return 0;
-                    else
-                        return Decimal.Parse(rawValue);
-                }
-                catch (CsvHelper.CsvHelperException ex)
-                {
-                    throw ex;
-                }
+                var rawValue = row.GetField(row.Context.CurrentIndex + 1);
+                if (rawValue == "")
+                    return 0;
+                else
+                if (rawValue == null)
+                    return 0;
+                else
+                    return Decimal.Parse(rawValue);
             }
-
 
 
             DateTime? NullDateTimeParser(IReaderRow row)
             {
+                var d = new DateTime(2000, 1, 1);
+
                 var rawValue = row.GetField(row.Context.CurrentIndex + 1);
                 if (rawValue == "")
-                    return null;
+                    return d;
+
+                //return null;
                 else
                     //  return rawValueTypeConverterOption.Format("M/d/yyyy");
                     return DateTime.Parse(rawValue);
             }
+
+            string NullStringParser(IReaderRow row)
+            {
+
+                var rawValue = row.GetField(row.Context.CurrentIndex + 1);
+                if (rawValue == "null")
+                    return "";
+
+
+                else
+                    //  return rawValueTypeConverterOption.Format("M/d/yyyy");
+                    return rawValue.ToString();
+            }
+
         }
     }
-}
-        
 
-    
+ 
+}
+

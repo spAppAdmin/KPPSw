@@ -43,7 +43,8 @@ namespace ImportListFromCSV
 
 
 
-        public static void UploadKPICSV() {
+        public static void UploadKPICSV()
+        {
 
             Uri siteUri = new Uri("https://kineticsys.sharepoint.com/sites/IntranetPortal/adm/ETL");
             Uri ETLUri = new Uri("https://kineticsys.sharepoint.com/sites/IntranetPortal/adm/ETL");
@@ -57,7 +58,8 @@ namespace ImportListFromCSV
             //CopyFileToSP(fileName, sourcePath, targetPath);
             string listName = "ProjectKPIs";
 
-          try {
+            try
+            {
                 ClientContext ctx = getProjectSpCtx(ETLUri);
 
                 if (ctx != null)
@@ -66,7 +68,7 @@ namespace ImportListFromCSV
                     List spList = ctx.Web.Lists.GetByTitle(listName);
 
                     //if(refresh)
-                    DeleteListItem(spList, ctx);
+                   // DeleteListItem(spList, ctx);
 
                     foreach (CsvRecord record in records)
                     {
@@ -77,11 +79,11 @@ namespace ImportListFromCSV
                         ctx.ExecuteQuery();
 
                         switch (existingMappings.Count)
-                        {                                                                                                               
+                        {
                             case 0:
                                 //No records found, needs to be added
-                                    AddNewListItem(record, spList, ctx);
-                                    
+                                AddNewListItem(record, spList, ctx);
+
                                 break;
                             default:
                                 //An existing record was found - continue with next item
@@ -103,7 +105,7 @@ namespace ImportListFromCSV
             }
         }
 
-   
+
 
 
         public static void CopyFileToSP(string fileName, string sourcePath, string targetPath)
@@ -133,66 +135,67 @@ namespace ImportListFromCSV
             }
         }
 
-        public static void AddNewListItem(CsvRecord record, List spList, ClientContext clientContext) {
+        public static void AddNewListItem(CsvRecord record, List spList, ClientContext clientContext)
+        {
 
-                   Int32 recordCount = 0;
-                    Dictionary<string, object> itemFieldValues = new Dictionary<string, object>();
-                    //Use reflection to iterate through the record's properties
-                    PropertyInfo[] properties = typeof(CsvRecord).GetProperties();
-                    foreach (PropertyInfo property in properties)
-                    {
-                        object propValue = property.GetValue(record, null);
-                        if (!String.IsNullOrEmpty(propValue.ToString()))
-                        {
-                            Field matchingField = spList.Fields.GetByInternalNameOrTitle(property.Name);
-                            clientContext.Load(matchingField);
-                            clientContext.ExecuteQuery();
-
-                            switch (matchingField.FieldTypeKind)
-                            {
-                                case FieldType.User:
-                                    FieldUserValue userFieldValue = GetUserFieldValue(propValue.ToString(), clientContext);
-                                    if (userFieldValue != null)
-                                        itemFieldValues.Add(matchingField.InternalName, userFieldValue);
-                                    else
-                                        throw new Exception("User field value could not be added: " + propValue.ToString());
-                                    break;
-                                case FieldType.Lookup:
-                                    FieldLookupValue lookupFieldValue = GetLookupFieldValue(propValue.ToString(),
-                                        ConfigurationManager.AppSettings["LookupListName"].ToString(),
-                                        clientContext);
-                                    if (lookupFieldValue != null)
-                                        itemFieldValues.Add(matchingField.InternalName, lookupFieldValue);
-                                    else
-                                        throw new Exception("Lookup field value could not be added: " + propValue.ToString());
-                                    break;
-                                case FieldType.Invalid:
-                                    switch (matchingField.TypeAsString)
-                                    {
-                                        default:
-                                            //Code for publishing site columns not implemented
-                                            continue;
-                                    }
-                                default:
-                                    itemFieldValues.Add(matchingField.InternalName, propValue);
-                                    break;
-                            }
-                        }
-                    }
-
-                    //Add new item to list
-                    ListItemCreationInformation creationInfo = new ListItemCreationInformation();
-                    ListItem oListItem = spList.AddItem(creationInfo);
-
-                    foreach (KeyValuePair<string, object> itemFieldValue in itemFieldValues)
-                    {
-                        //Set each field value
-                        oListItem[itemFieldValue.Key] = itemFieldValue.Value;
-                    }
-                    //Persist changes
-                    oListItem.Update();
+            Int32 recordCount = 0;
+            Dictionary<string, object> itemFieldValues = new Dictionary<string, object>();
+            //Use reflection to iterate through the record's properties
+            PropertyInfo[] properties = typeof(CsvRecord).GetProperties();
+            foreach (PropertyInfo property in properties)
+            {
+                object propValue = property.GetValue(record, null);
+                if (!String.IsNullOrEmpty(propValue.ToString()))
+                {
+                    Field matchingField = spList.Fields.GetByInternalNameOrTitle(property.Name);
+                    clientContext.Load(matchingField);
                     clientContext.ExecuteQuery();
+
+                    switch (matchingField.FieldTypeKind)
+                    {
+                        case FieldType.User:
+                            FieldUserValue userFieldValue = GetUserFieldValue(propValue.ToString(), clientContext);
+                            if (userFieldValue != null)
+                                itemFieldValues.Add(matchingField.InternalName, userFieldValue);
+                            else
+                                throw new Exception("User field value could not be added: " + propValue.ToString());
+                            break;
+                        case FieldType.Lookup:
+                            FieldLookupValue lookupFieldValue = GetLookupFieldValue(propValue.ToString(),
+                                ConfigurationManager.AppSettings["LookupListName"].ToString(),
+                                clientContext);
+                            if (lookupFieldValue != null)
+                                itemFieldValues.Add(matchingField.InternalName, lookupFieldValue);
+                            else
+                                throw new Exception("Lookup field value could not be added: " + propValue.ToString());
+                            break;
+                        case FieldType.Invalid:
+                            switch (matchingField.TypeAsString)
+                            {
+                                default:
+                                    //Code for publishing site columns not implemented
+                                    continue;
+                            }
+                        default:
+                            itemFieldValues.Add(matchingField.InternalName, propValue);
+                            break;
+                    }
                 }
+            }
+
+            //Add new item to list
+            ListItemCreationInformation creationInfo = new ListItemCreationInformation();
+            ListItem oListItem = spList.AddItem(creationInfo);
+
+            foreach (KeyValuePair<string, object> itemFieldValue in itemFieldValues)
+            {
+                //Set each field value
+                oListItem[itemFieldValue.Key] = itemFieldValue.Value;
+            }
+            //Persist changes
+            oListItem.Update();
+            clientContext.ExecuteQuery();
+        }
 
 
 
@@ -205,7 +208,7 @@ namespace ImportListFromCSV
 
                 using (var sr = new StreamReader(csvPath))
                 {
-                    
+
                     var parser = new CsvReader(sr, new CsvHelper.Configuration.Configuration
                     {
 
@@ -227,8 +230,8 @@ namespace ImportListFromCSV
                         parser.Configuration.TypeConverterOptionsCache.GetOptions<DateTime?>().NullValues.Add("");
                         parser.Configuration.RegisterClassMap<ProjectKPIMap>();
                         records = parser.GetRecords<CsvRecord>().ToList();
-                        }
                     }
+                }
 
                 return records;
             }
@@ -236,7 +239,7 @@ namespace ImportListFromCSV
 
             catch (CsvHelper.CsvHelperException ex)
             {
-                 throw ex;
+                throw ex;
             }
 
             catch (Exception ex)
@@ -248,7 +251,7 @@ namespace ImportListFromCSV
         private static bool ReadingExceptionOccurred(CsvHelperException arg)
         {
             throw new NotImplementedException();
-            
+
         }
 
 
@@ -332,54 +335,54 @@ namespace ImportListFromCSV
         }
 
     }
-    }
+}
 
 
-   
+
 
 
 
 public class LogWriter
+{
+    private string m_exePath = string.Empty;
+
+    public LogWriter(string logMessage)
     {
-        private string m_exePath = string.Empty;
+        this.LogWrite(logMessage);
+    }
 
-        public LogWriter(string logMessage)
+    public void Log(string logMessage, TextWriter txtWriter)
+    {
+        try
         {
-            this.LogWrite(logMessage);
+            txtWriter.Write("\r\nLog Entry : ");
+            txtWriter.WriteLine("{0} {1}", DateTime.Now.ToLongTimeString(), DateTime.Now.ToLongDateString());
+            txtWriter.WriteLine("  :");
+            txtWriter.WriteLine("  :{0}", logMessage);
+            txtWriter.WriteLine("-------------------------------");
+        }
+        catch (Exception exception)
+        {
         }
 
-        public void Log(string logMessage, TextWriter txtWriter)
+
+    }
+
+    public void LogWrite(string logMessage)
+    {
+        this.m_exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        try
         {
-            try
+            using (StreamWriter streamWriter = fs.File.AppendText(string.Concat(this.m_exePath, "\\log.txt")))
             {
-                txtWriter.Write("\r\nLog Entry : ");
-                txtWriter.WriteLine("{0} {1}", DateTime.Now.ToLongTimeString(), DateTime.Now.ToLongDateString());
-                txtWriter.WriteLine("  :");
-                txtWriter.WriteLine("  :{0}", logMessage);
-                txtWriter.WriteLine("-------------------------------");
+                this.Log(logMessage, streamWriter);
             }
-            catch (Exception exception)
-            {
-            }
-
-
         }
-
-        public void LogWrite(string logMessage)
+        catch (Exception exception)
         {
-            this.m_exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            try
-            {
-                using (StreamWriter streamWriter = fs.File.AppendText(string.Concat(this.m_exePath, "\\log.txt")))
-                {
-                    this.Log(logMessage, streamWriter);
-                }
-            }
-            catch (Exception exception)
-            {
-            }
         }
     }
+}
 
 
 

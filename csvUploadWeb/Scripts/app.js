@@ -2,9 +2,9 @@
 
 
 
-                                                                                                    $(document).ready(function () {
+                                                                                               $(document).ready(function () {
        
-
+                                                                                                  
                                                                                                     var hostweburl = decodeURIComponent(getQueryStringParameter("SPHostUrl"));
                                                                                                     var appweburl = decodeURIComponent(getQueryStringParameter("SPAppWebUrl"));
                                                                                                        //alert(hostweburl);
@@ -12,44 +12,30 @@
                                                                                                         var scriptbase = hostweburl + "/_layouts/15/";
                                                                                                         $.getScript(scriptbase + "SP.UI.Controls.js", renderChrome);
         
-                                                                                                     /*   $.getScript(scriptbase + 'SP.Runtime.js',
-
-                                                                                                            function () {
-                                                                                                                $.getScript(scriptbase + 'SP.js',
-                                                                                                                    function () { $.getScript(scriptbase + 'SP.RequestExecutor.js'); }
-                                                                                                                );
-                                                                                                            }
-                                                                                                        );*/
-        
-
-                                                                                                     // $find("mpe").show();
-                                                                                                       // alert('xxx');
+                                                                                                  
 
                                                                                                         $("#csvFile").val("C:\\temp\\ITL.csv");
                                                                                                         $("#txtProjURL").val("https://kineticsys.sharepoint.com/sites/projects/construction/SPP/000000000");
 
-
-                                                                                                });
-
-
-                                                                                                /*
+                                                                                                       
+                                                                                                    });
 
 
-                                                                                                    var launch = false;
-                                                                                                    function launchModal()
-                                                                                                 {
-                                                                                                        launch = true;
-                                                                                                 }
-   
                                                                                                 function pageLoad() {
-                                                                                                    if (launch) {
-                                                                                                        $find("mpe").show();
-                                                                                                    }
+                                                                                                    Sys.WebForms.PageRequestManager.getInstance().add_initializeRequest(cancelPostBack);
                                                                                                 }
-                                                                                                */
 
-   
-   
+                                                                                                function cancelPostBack(sender, args) {
+                                                                                                    if (Sys.WebForms.PageRequestManager.getInstance().get_isInAsyncPostBack()) {
+                                                                                                        alert('One postback at a time please');
+                                                                                                        args.set_cancel(true);
+                                                                                                        $("#imgProgress").hide();
+                                                                                                    }
+                                                                                                }  
+
+
+
+
                                                                                                 function renderChrome() {
 
                                                                                                     var options = {
@@ -72,10 +58,8 @@
                                                                                                                 var singleParam = params[i].split("=");
                                                                                                     if (singleParam[0] === paramToRetrieve)
                                                                                                         return singleParam[1];
+                                                                                                    }
                                                                                                 }
-                                                                                                }
-
-
 
                                                                                                     function showModalPopUp() {
                                                                                                         //Set options for Modal PopUp  
@@ -87,9 +71,7 @@
                                                                                                     width: 600,
                                                                                                     height: 400
                                                                                                 };
-                                                                                                //Invoke the modal dialog by passing in the options array variable
-                                                                                                //SP.SOD.execute('sp.ui.dialog.js', 'SP.UI.ModalDialog.showModalDialog', options);
-                                                                                                return false;
+                                                                                                    return false;
                                                                                                 }
 
 
@@ -209,3 +191,114 @@
                                                                                                         if (singleParam[0] === paramToRetrieve) return singleParam[1];
                                                                                                     }
                                                                                                 }
+
+
+
+   
+
+
+
+
+
+
+
+                                                                                        var availableTags = [
+                                                                                            "ActionScript",
+                                                                                            "AppleScript",
+                                                                                            "Asp",
+                                                                                            "BASIC",
+                                                                                            "C",
+                                                                                            "C++",
+                                                                                            "Clojure",
+                                                                                            "COBOL",
+                                                                                            "ColdFusion",
+                                                                                            "Erlang",
+                                                                                            "Fortran",
+                                                                                            "Groovy",
+                                                                                            "Haskell",
+                                                                                            "Java",
+                                                                                            "JavaScript",
+                                                                                            "Lisp",
+                                                                                            "Perl",
+                                                                                            "PHP",
+                                                                                            "Python",
+                                                                                            "Ruby",
+                                                                                            "Scala",
+                                                                                            "Scheme"
+                                                                                        ];
+                                                                                        $("#autocomplete").autocomplete({
+                                                                                            source: availableTags
+                                                                                        });
+                                                                                        $("#accordion").accordion();
+                                                                                        $("#button").button();
+                                                                                        $("#button-icon").button({
+                                                                                            icon: "ui-icon-gear",
+                                                                                            showLabel: false
+                                                                                        });
+
+                                                                                        $("#radioset").buttonset();
+                                                                                        $("#controlgroup").controlgroup();
+                                                                                        $("#tabs").tabs();
+                                                                                        $("#dialog").dialog({
+                                                                                            autoOpen: false,
+                                                                                            width: 400,
+                                                                                            buttons: [
+                                                                                                {
+                                                                                                    text: "Ok",
+                                                                                                    click: function () {
+                                                                                                        $(this).dialog("close");
+                                                                                                    }
+                                                                                                },
+                                                                                                {
+                                                                                                    text: "Cancel",
+                                                                                                    click: function () {
+                                                                                                        $(this).dialog("close");
+                                                                                                    }
+                                                                                                }
+                                                                                            ]
+                                                                                        });
+
+                                                                                        // Link to open the dialog
+                                                                                        $("#dialog-link").click(function (event) {
+                                                                                            $("#dialog").dialog("open");
+                                                                                            event.preventDefault();
+                                                                                        });
+
+                                                                                        $("#datepicker").datepicker({
+                                                                                            inline: true
+                                                                                        });
+
+                                                                                        $("#slider").slider({
+                                                                                            range: true,
+                                                                                            values: [17, 67]
+                                                                                        });
+
+
+                                                                                        $("#progressbar").progressbar({
+                                                                                            value: 20
+                                                                                        });
+
+                                                                                        $("#spinner").spinner();
+
+                                                                                        $("#menu").menu();
+
+                                                                                        $("#tooltip").tooltip();
+
+                                                                                        $("#selectmenu").selectmenu();
+
+                                                                                        $("#dialog-link, #icons li").hover(
+                                                                                            function () {
+                                                                                                $(this).addClass("ui-state-hover");
+                                                                                            },
+                                                                                            function () {
+                                                                                                $(this).removeClass("ui-state-hover");
+                                                                                            }
+                                                                                        );
+
+
+                                                                                            
+
+
+
+
+

@@ -74,7 +74,13 @@ namespace csvUploadWeb.Pages {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label msg;
+
+
+        protected global::System.Web.UI.WebControls.Label lblmin;
+
+
         
+
         /// <summary>
         /// csvFile control.
         /// </summary>
