@@ -15,8 +15,6 @@ using c = csvUploadWeb;
 using System.Text;
 using Microsoft.SharePoint.Client.Utilities;
 using System.Runtime.CompilerServices;
-using SPA = csvUploadWeb.QueryAssistants;
-using SPL = csvUploadWeb.GeneralLogging;
 using CsvHelper;
 using CsvHelper.Configuration;
 using System.Reflection;
@@ -27,8 +25,11 @@ using System.Web.Script.Serialization;
 using System.ComponentModel;
 using CsvHelper.TypeConversion;
 using cvsCnfig = CsvHelper.TypeConversion;
-using NLog;
 using System.Diagnostics;
+using SPHelpers;
+using SPA = SPHelpers.QueryAssistants;
+using SPL = SPHelpers.GeneralLogging;
+
 
 namespace csvUploadWeb.Pages
 {
@@ -58,32 +59,21 @@ namespace csvUploadWeb.Pages
         {
             //Get projects catalog list
             getProjectList();
-
+            
             if (!this.IsPostBack)
             {
-
             }
-            
-
         }
 
 
-
-     
-
         protected void Button1_Click(object sender, EventArgs e)
         {
-            try
-            {
-
-                
                 var spContext = SharePointContextProvider.Current.GetSharePointContext(Context);
                 var ctx = spContext.CreateUserClientContextForSPHost();
 
                 var projectURL = txtProjURL.Text;
                 // var file = csvFile.Text.ToString();
                 var file = "c:\\temp\\ITL.csv";
-
                 var listName = ddTargetList.SelectedValue;
                 var path = Path.Combine("@", file);
                 string fileNameWoExt = Path.GetFileNameWithoutExtension(file);
@@ -91,71 +81,72 @@ namespace csvUploadWeb.Pages
                 string filepath = Path.GetFullPath(file);
                 string csvPath = file;
                 Uri projSiteUrl = new Uri(projectURL);
-
                 var lookup = "CostCodeList";
                 string lookupFieldName = "AreaName_x002b_SubTask";
                 string lookupFieldType = "Calculated";
-
                 var action = rbAction.SelectedValue;
                 Int32 recordCount = 0;
+
+            ClientContext ctxx = getProjectSpCtx(projSiteUrl);
+
+        
+            try
+            {
 
                 switch (action)
                 {
 
                     case "AddNew":// This will add an entry if it doesn't exist
-                        recordCount = ActionAddNewListItems(csvPath, projSiteUrl, action, listName, fileNamewExt, lookup, lookupFieldName, lookupFieldType);
-                        clientMessage(this.Page, action + " Completed" + recordCount + " Loaded");
+                        recordCount = ActionAddNewListItems(csvPath, action, listName, fileNamewExt, lookup, lookupFieldName, lookupFieldType,ctxx);
+                        clientMessage(this.Page, action + " Completed. " + recordCount + " Loaded Succcessfully");
                         break;
                     case "AddAll"://This will force the creation of a brand new entry even if it already exists.
-                        recordCount = ActionAddAllListItems(csvPath, projSiteUrl, action, listName, fileNamewExt, lookup, lookupFieldName, lookupFieldType);
+                        recordCount = ActionAddAllListItems(csvPath, action, listName, fileNamewExt, lookup, lookupFieldName, lookupFieldType,ctxx);
+                        clientMessage(this.Page, action + " Completed. " + recordCount + " Records Loaded Succcessfully");
                         break;
                     case "Update":// This will add an entry if it doesn't exist, but will only update if it does exist.
-                        recordCount = ActionUpdateListItems(csvPath, projSiteUrl, action, listName, fileNamewExt, lookup, lookupFieldName, lookupFieldType);
+                        recordCount = ActionUpdateListItems(csvPath, action, listName, fileNamewExt, lookup, lookupFieldName, lookupFieldType,ctxx);
+                        clientMessage(this.Page, action + " Completed. " + recordCount + " Records Upated Succcessfully");
                         break;
                     case "Delete":// // This will delete 1 or MANY entries in the list
-                        ActionDeleteCSVListItems(listName, projSiteUrl, csvPath);
-                        recordCount = ActionDeleteCSVListItems(listName, projSiteUrl, csvPath);
+                        //ActionDeleteCSVListItems(listName, csvPath,ctxx);
+                        recordCount = ActionDeleteCSVListItems(listName, csvPath,ctxx);
+                        clientMessage(this.Page, action + " Completed. " + recordCount + " Records Deleted Succcessfully");
                         break;
                     case "DeleteAll"://Caution - this will delete all records in list
-                        recordCount = ActionDeleteAllListItems(listName, projSiteUrl);
-
+                        recordCount = ActionDeleteAllListItems(listName, ctxx);
+                        clientMessage(this.Page, action + " Completed. " + recordCount + " Records Deleted Succcessfully");
                         break;
-
                 }
 
-
-                clientMessage(this.Page, action + " Completed" + recordCount + " Loaded");
-
+                //clientMessage(this.Page, action + " Completed" + recordCount + " Loaded");
             }
-
             catch (Exception ex)
             {
                 
+                //SPL.WriteExceptionToLog(ex);
                 HandleException(this.Page, ex);
-                SPL.LogEntries.Add("Event => ErrorMessage: " + ex.Message + " ErrorSource: " + ex.Source);
-
-                //var n = new NLog.
-
+                //SPL.Output.Add("Event => ErrorMessage: " + ex.Message + " ErrorSource: " + ex.Source);
             }
         }
       
 
-        private static void KillExistingProcesses()
+        private static void KillExistingProcesses() 
         {
             Process[] p = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
             foreach (var pro in p)
             {
                 pro.Kill();
+                
             }
+            
+
         }
 
 
         protected void KillProcess(object sender, EventArgs e)
         {
             KillExistingProcesses();
-            
-
-
         }
 
 
@@ -171,9 +162,9 @@ namespace csvUploadWeb.Pages
             sb.AppendLine(trace);
             var message = sb.ToString();
 
-            var script = string.Format("alert({0});", msg);
+            var script = string.Format("alert({0});", message);
             ScriptManager.RegisterClientScriptBlock(page, page.GetType(), "DisplaysMsg", script, true);
-
+            //ex.Data.Add("Invalid CSV File (Verify CSV Fields match List)<br>CVSHelper Exception<br>System Msg:" + ex.InnerException.ToString(), ex.StackTrace.ToString());
 
         }
 
@@ -182,12 +173,12 @@ namespace csvUploadWeb.Pages
             var message = new JavaScriptSerializer().Serialize(msg.ToString());
             var script = string.Format("alert({0});", message);
             ScriptManager.RegisterClientScriptBlock(page, page.GetType(), "DisplayMsg", script, true);
-
         }
 
-        public static Int32 ActionDeleteAllListItems(string listName, Uri projSiteURI) {
+
+        public static Int32 ActionDeleteAllListItems(string listName, ClientContext ctx) {
             Int32 rtnRecord = 0;
-            ClientContext ctx = getProjectSpCtx(projSiteURI);
+            //ClientContext ctx = SPA.getProjectSpCtx(projSiteURI);
             if (ctx != null)
             {
                 List spList = ctx.Web.Lists.GetByTitle(listName);
@@ -208,13 +199,14 @@ namespace csvUploadWeb.Pages
                 }
             }
             return rtnRecord;
+
         }
 
-        public static Int32 ActionDeleteCSVListItems(string listName, Uri projSiteURI, string csvPath)
+        public static Int32 ActionDeleteCSVListItems(string listName, string csvPath, ClientContext ctx)
         {
             try
             {
-                ClientContext ctx = getProjectSpCtx(projSiteURI);
+                //ClientContext ctx = SPA.getProjectSpCtx(projSiteURI);
                 Int32 recordCount = 0;
                 if (ctx != null)
                 {
@@ -251,11 +243,11 @@ namespace csvUploadWeb.Pages
             }
         }
 
-        public static Int32 ActionUpdateListItems(string csvPath, Uri projSiteURI, string action, string listName, string fileName, string lookup, string lookupFieldName, string lookupFieldType)
+        public static Int32 ActionUpdateListItems(string csvPath, string action, string listName, string fileName, string lookup, string lookupFieldName, string lookupFieldType, ClientContext ctx)
         {
             try
             {
-                ClientContext ctx = getProjectSpCtx(projSiteURI);
+                //ClientContext ctx = SPA.getProjectSpCtx(projSiteURI);
                 Int32 recordCount = 0;
                 if (ctx != null)
                 {
@@ -293,20 +285,16 @@ namespace csvUploadWeb.Pages
             }
         }
 
-        public static Int32 ActionAddNewListItems(string csvPath, Uri projSiteURI, string action, string listName, string fileName, string lookup, string lookupFieldName, string lookupFieldType)
+        public static Int32 ActionAddNewListItems(string csvPath, string action, string listName, string fileName, string lookup, string lookupFieldName, string lookupFieldType, ClientContext ctx)
         {
             try
             {
-                ClientContext ctx = getProjectSpCtx(projSiteURI);
-
                 Int32 recordCount = 0;
 
                 if (ctx != null)
                 {
-
                     List<ITLRecord> records = GetRecordsFromITLCsv(csvPath);
                     List spList = ctx.Web.Lists.GetByTitle(listName);
-
 
                     //Checks to see if an item already exists with the same title and preserves
 
@@ -337,6 +325,7 @@ namespace csvUploadWeb.Pages
                 }
                 return recordCount;
             }
+            
             catch (Exception ex)
             {
                 ex.Data.Add("UserMessage", ex.InnerException.ToString() + "," + ex.StackTrace.ToString());
@@ -345,11 +334,11 @@ namespace csvUploadWeb.Pages
 
         }
 
-        public static Int32 ActionAddAllListItems(string csvPath, Uri projSiteURI, string action, string listName, string fileName, string lookup, string lookupFieldName, string lookupFieldType)
+        public static Int32 ActionAddAllListItems(string csvPath, string action, string listName, string fileName, string lookup, string lookupFieldName, string lookupFieldType, ClientContext ctx)
         {
             try
             {
-                ClientContext ctx = getProjectSpCtx(projSiteURI);
+                //ClientContext ctx = getProjectSpCtx(projSiteURI);
 
                 Int32 recordCount = 0;
                 int i = 0;
@@ -532,40 +521,39 @@ namespace csvUploadWeb.Pages
             
             catch (IndexOutOfRangeException ex)
             {
-                ex.Data.Add("UserMessage", ex.InnerException.ToString() + "," + ex.StackTrace.ToString());
+                ex.Data.Add("Invalid CSV File (Verify CSV Fields match List)<br>System Msg:" + ex.InnerException.ToString(), ex.StackTrace.ToString());
                 throw;
-
             }
 
 
             catch (InvalidOperationException ex)
             {
-                ex.Data.Add("UserMessage", ex.InnerException.ToString() + "," + ex.StackTrace.ToString());
+                ex.Data.Add("Invalid CSV File (Verify CSV Fields match List)<br>System Msg:" + ex.InnerException.ToString(), ex.StackTrace.ToString());
                 throw;
             }
 
             catch (ArgumentNullException ex)
             {
-                ex.Data.Add("UserMessage", ex.InnerException.ToString() + "," + ex.StackTrace.ToString());
+                ex.Data.Add("Invalid CSV File (Verify CSV Fields match List)<br>System Msg:" + ex.InnerException.ToString(), ex.StackTrace.ToString());
                 throw;
             }
 
 
             catch (NullReferenceException ex)
             {
-                ex.Data.Add("UserMessage", ex.InnerException.ToString() + "," + ex.StackTrace.ToString());
+                ex.Data.Add("Invalid CSV File (Verify CSV Fields match List)<br>NullRefException<br>System Msg:" + ex.InnerException.ToString(), ex.StackTrace.ToString());
                 throw;
             }
 
             catch (CsvHelperException ex)
             {
-                ex.Data.Add("UserMessage", ex.InnerException.ToString() + "," + ex.StackTrace.ToString());
+                ex.Data.Add("Invalid CSV File (Verify CSV Fields match List)<br>CVSHelper Exception<br>System Msg:" + ex.InnerException.ToString(), ex.StackTrace.ToString());
                 throw;
             }
 
             catch (Exception ex)
             {
-                ex.Data.Add("UserMessage", ex.InnerException.ToString() + "," + ex.StackTrace.ToString());
+                ex.Data.Add("Invalid CSV File (Verify CSV Fields match List)<br>System Msg:" + ex.InnerException.ToString(), ex.StackTrace.ToString());
                 throw;
 
             }
@@ -573,38 +561,7 @@ namespace csvUploadWeb.Pages
 
         }
 
-        public static class ForEachHelper
-        {
-            public sealed class Item<T>
-            {
-                public int Index { get; set; }
-                public T Value { get; set; }
-                public bool IsLast { get; set; }
-            }
-
-            public static IEnumerable<Item<T>> WithIndex<T>(IEnumerable<T> enumerable)
-            {
-                Item<T> item = null;
-                foreach (T value in enumerable)
-                {
-                    Item<T> next = new Item<T>();
-                    next.Index = 0;
-                    next.Value = value;
-                    next.IsLast = false;
-                    if (item != null)
-                    {
-                        next.Index = item.Index + 1;
-                        yield return item;
-                    }
-                    item = next;
-                }
-                if (item != null)
-                {
-                    item.IsLast = true;
-                    yield return item;
-                }
-            }
-        }
+      
 
 
         //public IEnumerable<ITLRecord>
@@ -614,7 +571,9 @@ namespace csvUploadWeb.Pages
         {
             try
             {
+                List<string> result = new List<string>();
                 List<ITLRecord> records = new List<ITLRecord>();
+                string value;
                 using (var sr = new StreamReader(csvPath))
                 {
                     var parser = new CsvReader(sr, new CsvHelper.Configuration.Configuration
@@ -623,55 +582,73 @@ namespace csvUploadWeb.Pages
                         HeaderValidated = null,
                         //MissingFieldFound = " ",
                         //UseNewObjectForNullReferenceMembers = true,
-                        //TrimOptions = TrimOptions.Trim,
+                        TrimOptions = TrimOptions.Trim
                         //ShouldSkipRecord = true;
                         //IgnoreBlankLines = false
-
-
-                        //  ReadingExceptionOccurred = (ex, row) => errors.Add(string.Format("Line[{0}]: {1}", row.Row, ex.Message))
+                        //ReadingExceptionOccurred = (ex, row) => errors.Add(string.Format("Line[{0}]: {1}", row.Row, ex.Message))
                     });
 
                     using (parser) {
 
                         parser.Configuration.RegisterClassMap<ProjectITLMap>();
-                        //parser.Configuration.TypeConverterOptionsCache.GetOptions<string>().NullValues.Add("");
-                        //parser.Configuration.TypeConverterOptionsCache.GetOptions<DateTime?>().NullValues.Add("null");
-                        //parser.Configuration.TypeConverterOptionsCache.GetOptions<DateTime?>().NullValues.Add("");
-                        //parser.Configuration.MissingFieldFound = (headerNames, index, context) =>
-                        // {
-                        //SPL.LogEntries.Add("Event => ErrorMessage: " + ex.Message + " ErrorSource: " + ex.Source);.WriteLine($"Field with names ['{string.Join("', '", headerNames)}'] at index '{index}' was not found. );
-                        //};
 
-                        parser.Configuration.ReadingExceptionOccurred = ReadingExceptionOccurred;
-                        //parser.Configuration.MissingFieldFound( = ReadingExceptionOccurred;
+                        /*while (parser.Read())
+                        {
+                            for (int i = 0; parser.TryGetField<string>(i, out value); i++)
+                            {
+                                result.Add(value);
+                            }
 
-                        
-                        //NullableConverter(typeof(string)).ConvertFromString(new TypeConverterOptions(), "NA")
-                        records = parser.GetRecords<ITLRecord>().ToList();
+                            parser.Configuration.HeaderValidated = null;
+                            parser.Configuration.HeaderValidated = (isValid, headerNames, headerNameIndex, context) =>
+                            {
+                                if (!isValid)
+                                {
+                                    throw new Exception(($"Header matching ['{string.Join("', '", headerNames)}'] names at index {headerNameIndex} was not found."));
+                                }
+                            };
+                        }*/
+
+                            
+                            //SPL.LogEntries.Add("Event => ErrorMessage: " + ex.Message + " ErrorSource: " + ex.Source);.WriteLine($"Field with names ['{string.Join("', '", headerNames)}'] at index '{index}' was not found. );
+                            
+
+                            parser.Configuration.MissingFieldFound = null;
+                            parser.Configuration.MissingFieldFound = (row, index, context) =>
+                            {
+                                throw new Exception("Column not found in CSV File");
+                            };
+
+
+                            parser.Configuration.ReadingExceptionOccurred = ReadingExceptionOccurred;
+                            //parser.Configuration.MissingFieldFound( = ReadingExceptionOccurred;
+
+
+                            //NullableConverter(typeof(string)).ConvertFromString(new TypeConverterOptions(), "NA")
+                            records = parser.GetRecords<ITLRecord>().ToList();
+                            //parser.ValidateHeader<ITLRecord>();
+                        }
                     }
-                }
 
                 return records;
             }
 
             catch (CsvHelperException ex)
             {
-             ex.Data.Add("UserMessage", ex.InnerException.ToString() + "," + ex.StackTrace.ToString());
+                ex.Data.Add("Invalid CSV File (Verify CSV Fields match List)<br>System Msg:" + ex.InnerException.ToString(), ex.StackTrace.ToString());
                 throw;
             }
 
             catch (Exception ex)
             {
-                ex.Data.Add("UserMessage", ex.InnerException.ToString() + "," + ex.StackTrace.ToString());
+                ex.Data.Add("Invalid CSV File (Verify CSV Fields match List)<br>System Msg:"+ ex.InnerException.ToString(),ex.StackTrace.ToString());
                 throw;
             }
-
         }
 
         private static bool ReadingExceptionOccurred(CsvHelperException arg)
         {
-            throw new NotImplementedException();
-
+            throw new Exception("Error in reading CSV File");
         }
 
         public static FieldUserValue GetUserFieldValue(string userName, ClientContext clientContext)
@@ -745,13 +722,13 @@ namespace csvUploadWeb.Pages
             return null;
         }
 
-        public static void createCSVLoaderList()
-        {
 
+/*        public static void createCSVLoaderList()
+        {
             Uri ProjUri = new Uri("https://kineticsys.sharepoint.com/sites/projects");
             ListCreationInformation listInfo = new ListCreationInformation();
             listInfo.Title = "CSV Uploader";
-            ClientContext ctx = getProjectSpCtx(ProjUri);
+            ClientContext ctx = SPA.getProjectSpCtx(ProjUri);
 
             ListTemplate listTemplate = ctx.Site.GetCustomListTemplates(ctx.Site.RootWeb).GetByName("CSV Uploader");
             ctx.Load(listTemplate, tL => tL.Name, tL => tL.FeatureId, tL => tL.ListTemplateTypeKind);
@@ -761,7 +738,7 @@ namespace csvUploadWeb.Pages
             listInfo.TemplateType = listTemplate.ListTemplateTypeKind;
             //web.Lists.Add(listInfo);
             ctx.ExecuteQuery();
-        }
+        }*/
 
         public void getProjectList()
         {
@@ -790,10 +767,9 @@ namespace csvUploadWeb.Pages
                 string text = string.Format("{0}", item.FieldValues["Project_x0020_Name"]);
                 ddlProjName.Items.Add(new System.Web.UI.WebControls.ListItem(hyp.Description, hyp.Url));
             }
-            // ddlProjName.SelectedItem.Text= "KPPS Project Template";
-            // txtProjURL.Text = "000000000 KPPS Project Template";
-
         }
+
+
 
         public static ClientContext getProjectSpCtx(Uri UriProject)
         {
@@ -812,65 +788,10 @@ namespace csvUploadWeb.Pages
 
             return ctx;
         }
+        
+    
 
-        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
-
-        [Serializable()]
-        public class InvalidDepartmentException : System.Exception
-        {
-            public InvalidDepartmentException() : base() { }
-            public InvalidDepartmentException(string message) : base(message) { }
-            public InvalidDepartmentException(string message, System.Exception inner) : base(message, inner) { }
-
-            // A constructor is needed for serialization when an
-            // exception propagates from a remoting server to the client. 
-            protected InvalidDepartmentException(System.Runtime.Serialization.SerializationInfo info,
-                System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
-        }
-
-        public class LogWriter
-        {
-            private string m_exePath = string.Empty;
-
-            public LogWriter(string logMessage)
-            {
-                this.LogWrite(logMessage);
-            }
-
-            public void Log(string logMessage, TextWriter txtWriter)
-            {
-                try
-                {
-                    txtWriter.Write("\r\nLog Entry : ");
-                    txtWriter.WriteLine("{0} {1}", DateTime.Now.ToLongTimeString(), DateTime.Now.ToLongDateString());
-                    txtWriter.WriteLine("  :");
-                    txtWriter.WriteLine("  :{0}", logMessage);
-                    txtWriter.WriteLine("-------------------------------");
-                }
-                catch (Exception exception)
-                {
-                }
-
-
-            }
-
-
-            public void LogWrite(string logMessage)
-            {
-                this.m_exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                try
-                {
-                    using (StreamWriter streamWriter = fs.File.AppendText(string.Concat(this.m_exePath, "\\log.txt")))
-                    {
-                        this.Log(logMessage, streamWriter);
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                }
-            }
-        }
+        
     }
 }
         

@@ -124,7 +124,7 @@ namespace csvUploadWeb
             Map(m => m._x006b_o58).Name("Date-Tested").ConvertUsing(NullDateTimeParser);
             Map(m => m.DueDate).Name("Due Date").ConvertUsing(NullDateTimeParser);
             Map(m => m.Body).Name("Description");
-            Map(m => m.FAB_x002d_Comments_x002f_Mat_x00).Name("FAB-Comments/Mat.Shorts");
+            Map(m => m.FAB_x002d_Comments_x002f_Mat_x00).Name("FAB-Comments/Mat.Shorts?");
             Map(m => m.FAB_x002d_Cut_x002f_Tack_x0020__).Name("FAB-Cut/Tack (50%)");
             Map(m => m.FAB_x002d_Kit_x002f_TO_x0020__x0).Name("FAB-Kit/TO (10%)");
             Map(m => m.Fab_x002d_QC_x0020__x0028_10_x00).Name("FAB-QC (10%)");

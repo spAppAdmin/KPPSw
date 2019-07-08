@@ -202,12 +202,14 @@ $(document).ready(function () {
         });
 
         $('#sw_start').on('click', function () {
+            $.APP.resetTimer();
             $.APP.startTimer('sw');
         });
         
         $('#btnKill').on('click', function () {
             //alert('stop');
             $.APP.stopTimer();
+            $.APP.resetTimer();
 
         });
 

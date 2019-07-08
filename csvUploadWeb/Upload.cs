@@ -13,8 +13,6 @@ using Microsoft.SharePoint.Client.Utilities;
 using System.Runtime.CompilerServices;
 using System.Security;
 using System.Web;
-using SPA = csvUploadWeb.QueryAssistants;
-using SPL = csvUploadWeb.GeneralLogging;
 using CsvHelper;
 using CsvHelper.Configuration;
 using System.Linq.Expressions;
@@ -69,7 +67,7 @@ namespace csvUploadWeb
             List<Expression<Func<sp.ListItemCollection, object>>> allIncludes = new List<Expression<Func<sp.ListItemCollection, object>>>();
             foreach (var c in columns)
             {
-                // Log.LogMessage( "Fetching column {0}", c );
+               //  Log.LogMessage( "Fetching column {0}", c );
                 allIncludes.Add(items => items.Include(item => item[c]));
             }
 
@@ -119,6 +117,7 @@ namespace csvUploadWeb
                 headerRow = csv.Context.HeaderRecord;
 
                 dynamic expando = new ExpandoObject();
+                
                 expando.Name = "Brian";
                 expando.Country = "USA";
 

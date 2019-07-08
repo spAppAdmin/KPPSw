@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csvUpload", "csvUpload\csvU
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csvUploadWeb", "csvUploadWeb\csvUploadWeb.csproj", "{EAB3F75B-06A0-434B-AD99-7DAC7C2AEEDD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelRestAPI", "ExcelRestAPI\ExcelRestAPI\ExcelRestAPI.csproj", "{3ECBC20F-56E3-48E0-A5CA-7A2C85DCA605}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +30,10 @@ Global
 		{EAB3F75B-06A0-434B-AD99-7DAC7C2AEEDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EAB3F75B-06A0-434B-AD99-7DAC7C2AEEDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EAB3F75B-06A0-434B-AD99-7DAC7C2AEEDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3ECBC20F-56E3-48E0-A5CA-7A2C85DCA605}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3ECBC20F-56E3-48E0-A5CA-7A2C85DCA605}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3ECBC20F-56E3-48E0-A5CA-7A2C85DCA605}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3ECBC20F-56E3-48E0-A5CA-7A2C85DCA605}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

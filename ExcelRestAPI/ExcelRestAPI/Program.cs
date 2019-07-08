@@ -24,7 +24,12 @@ namespace ExcelRestAPI
             Uri uriProject = new Uri("https://kineticsys.sharepoint.com/sites/projects/construction/SPP/000000000");
             ClientContext ctx = getProjectSpCtx(uriProject);
 
-            string url = "https://kineticsys.sharepoint.com/sites/projects/construction/SPP/000000000/pro/03%20Finance/_vti_bin/ExcelRest.aspx/03.04%20MP%20Plan-Productivity/Kinetics-MP%20Plan%20and%20Labor%20Productivity%20Tracker.xlsx/model/Ranges('Data2')?$format=html";
+      
+
+            string url = "https://kineticsys.sharepoint.com/sites/projects/construction/midat/622000336/_vti_bin/ExcelRest.aspx/pro/03%20Finance/03.04%20MP%20Plan-Productivity/Kinetics-MP%20Plan%20and%20Labor%20Productivity%20Tracker.xlsx/model/Ranges('KFRollup')?$format=html";
+
+
+     
 
 
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);

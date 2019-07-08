@@ -11,11 +11,18 @@ using System.Linq;
 using System.Text;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Utilities;
+
+using mu  = Microsoft.SharePoint.Client.Utilities;
 using System.Runtime.CompilerServices;
 using System.Web;
 using CsvHelper;
 using CsvHelper.Configuration;
 using System.Net;
+
+using SPHelpers;
+using SPA = SPHelpers.QueryAssistants;
+using SPL = SPHelpers.GeneralLogging;
+
 
 namespace ImportListFromCSV
 {
@@ -36,6 +43,7 @@ namespace ImportListFromCSV
 
             catch (Exception ex)
             {
+              
                 Console.Write(ex.Data.ToString());
                 Console.Read();
             }
@@ -245,6 +253,7 @@ namespace ImportListFromCSV
             catch (Exception ex)
             {
                 throw ex;
+               
             }
         }
 

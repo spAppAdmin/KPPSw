@@ -98,8 +98,9 @@ namespace uploadCSV
             catch (Exception ex)
             {
                 Console.Write(" Msg: " + ex.Message + " Soource: " + ex.Source);
-                SPL.WriteExceptionToLog(ex);
+               
             }
+            
             SPL.WriteStatusHistoryToLog();
         }//End Main
 

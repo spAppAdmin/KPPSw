@@ -1,8 +1,9 @@
 ﻿body {
     overflow: visible;
     margin: 10px;
-    font-family:Calibri;
-    font-display:auto;
+    font-family: Calibri;
+    font-display: auto;
+    font-size: 100% !important;
 }
 
 .operation-panel {
@@ -51,6 +52,21 @@
 
 
 
+#Instructions {
+    position: absolute;
+    top: 50px;
+    right: 100px;
+    background-image: url("../Images/info.png");
+    background-repeat: no-repeat;
+    background-size: 15px;
+    background-position: left;
+    padding-left: 20px;
+}
+
+
+
+
+
 #rbAction tbody tr td {
     border: solid 0px red;
     margin: 2px 0px 2px 0px;
@@ -82,7 +98,7 @@
 
 
 .modalBackground {
-    background-color:#808080;
+    background-color: #808080;
     filter: alpha(opacity=90);
     opacity: 0.8;
 }
@@ -98,9 +114,12 @@
 }
 
 
-#frmtbl{ width:75%;}
+#frmtbl {
+    width: 85%;
+    border: solid 0px red;
+}
 
-small{color:dodgerblue;}
+small{color:dodgerblue; font-size:75% !important;}
 
 #frmtbl {
  table-layout:auto;
@@ -112,12 +131,6 @@ small{color:dodgerblue;}
       border:solid 0px red;
 }
 
-
-#Instructions {
-    position: absolute;
-    top: 85px;
-    right: 300px;
-}
 
 
 b {
@@ -141,51 +154,20 @@ b {
 }
 
 
-
-
-.btnProcess {
-    -moz-box-shadow: 0px 10px 14px -7px #bbdaf7;
-    -webkit-box-shadow: 0px 10px 14px -7px #bbdaf7;
-    box-shadow: 0px 10px 14px -7px #bbdaf7;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #79bbff), color-stop(1, #378de5));
-    background: -moz-linear-gradient(top, #79bbff 5%, #378de5 100%);
-    background: -webkit-linear-gradient(top, #79bbff 5%, #378de5 100%);
-    background: -o-linear-gradient(top, #79bbff 5%, #378de5 100%);
-    background: -ms-linear-gradient(top, #79bbff 5%, #378de5 100%);
-    background: linear-gradient(to bottom, #79bbff 5%, #378de5 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#79bbff', endColorstr='#378de5                                                                                                                                                                                        aaa',GradientType=0);
-    background-color: #79bbff;
-    -moz-border-radius: 8px;
-    -webkit-border-radius: 8px;
-    border-radius: 8px;
-    display: inline-block;
-    cursor: pointer;
-    color: #ffffff !important;
-    font-family: Arial;
-    font-size: 17px;
-    font-weight: bold;
-    padding: 8px 18px;
-    text-decoration: none;
-    text-shadow: 0px 1px 0px #528ecc;
+#btnStart {
+    border-radius: 12px;
+    padding: 10px 24px;
+    margin-bottom:15px
 }
 
-.btnProcess:hover {
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #378de5), color-stop(1, #79bbff));
-    background: -moz-linear-gradient(top, #378de5 5%, #79bbff 100%);
-    background: -webkit-linear-gradient(top, #378de5 5%, #79bbff 100%);
-    background: -o-linear-gradient(top, #378de5 5%, #79bbff 100%);
-    background: -ms-linear-gradient(top, #378de5 5%, #79bbff 100%);
-    background: linear-gradient(to bottom, #378de5 5%, #79bbff 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#378de5', endColorstr='#79bbff',GradientType=0);
-    background-color: #378de5;
+
+
+#btnKill {
+    border-radius: 12px;
+    padding: 10px 24px;
+    margin-bottom: 15px
 }
 
-.btnProcess:active {
-    position: relative;
-    top: 1px;
-}
-
-/* for a controls  */
 
 
 .modal {
