@@ -1,15 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.572
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KSIReportProcessing", "KSIReportProcessing\KSIReportProcessing.csproj", "{5564C14C-1EFC-49DE-A938-B40FBE2CE1C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KPI-CSV-ReportProcessing", "KSIReportProcessing\KPI-CSV-ReportProcessing.csproj", "{5564C14C-1EFC-49DE-A938-B40FBE2CE1C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csvUpload", "csvUpload\csvUpload.csproj", "{72F44C65-1EAE-4291-8A31-E9B4907E0C13}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KPI-KFactor-ReportProcessing", "ExcelRestAPI\ExcelRestAPI\KPI-KFactor-ReportProcessing.csproj", "{3ECBC20F-56E3-48E0-A5CA-7A2C85DCA605}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csvUploadWeb", "csvUploadWeb\csvUploadWeb.csproj", "{EAB3F75B-06A0-434B-AD99-7DAC7C2AEEDD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KSI-List-ReportProcessing", "KSI-List-ReportProcessing\KSI-List-ReportProcessing.csproj", "{0546E5D0-8338-4644-A1CA-1DA70A7346C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelRestAPI", "ExcelRestAPI\ExcelRestAPI\ExcelRestAPI.csproj", "{3ECBC20F-56E3-48E0-A5CA-7A2C85DCA605}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessHelper", "ProcessHelper\ProcessHelper.csproj", "{EE902449-2E5A-4C2C-90B1-0B60E8A6D51E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KPI-List-ProcessingFunc", "KPI-List-ProcessingFunc\KPI-List-ProcessingFunc.csproj", "{CF46EF09-00A4-47F0-BE50-097BF5BD3E90}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSVUploader", "csvUploader\CSVUploader.csproj", "{6BAF6DDB-94C7-4111-BD55-07A89549EBD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,25 +24,32 @@ Global
 		{5564C14C-1EFC-49DE-A938-B40FBE2CE1C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5564C14C-1EFC-49DE-A938-B40FBE2CE1C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5564C14C-1EFC-49DE-A938-B40FBE2CE1C3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{72F44C65-1EAE-4291-8A31-E9B4907E0C13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{72F44C65-1EAE-4291-8A31-E9B4907E0C13}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{72F44C65-1EAE-4291-8A31-E9B4907E0C13}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{72F44C65-1EAE-4291-8A31-E9B4907E0C13}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{72F44C65-1EAE-4291-8A31-E9B4907E0C13}.Release|Any CPU.Build.0 = Release|Any CPU
-		{72F44C65-1EAE-4291-8A31-E9B4907E0C13}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{EAB3F75B-06A0-434B-AD99-7DAC7C2AEEDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EAB3F75B-06A0-434B-AD99-7DAC7C2AEEDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EAB3F75B-06A0-434B-AD99-7DAC7C2AEEDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EAB3F75B-06A0-434B-AD99-7DAC7C2AEEDD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3ECBC20F-56E3-48E0-A5CA-7A2C85DCA605}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3ECBC20F-56E3-48E0-A5CA-7A2C85DCA605}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3ECBC20F-56E3-48E0-A5CA-7A2C85DCA605}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3ECBC20F-56E3-48E0-A5CA-7A2C85DCA605}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0546E5D0-8338-4644-A1CA-1DA70A7346C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0546E5D0-8338-4644-A1CA-1DA70A7346C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0546E5D0-8338-4644-A1CA-1DA70A7346C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0546E5D0-8338-4644-A1CA-1DA70A7346C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE902449-2E5A-4C2C-90B1-0B60E8A6D51E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE902449-2E5A-4C2C-90B1-0B60E8A6D51E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE902449-2E5A-4C2C-90B1-0B60E8A6D51E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE902449-2E5A-4C2C-90B1-0B60E8A6D51E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF46EF09-00A4-47F0-BE50-097BF5BD3E90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF46EF09-00A4-47F0-BE50-097BF5BD3E90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF46EF09-00A4-47F0-BE50-097BF5BD3E90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF46EF09-00A4-47F0-BE50-097BF5BD3E90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BAF6DDB-94C7-4111-BD55-07A89549EBD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BAF6DDB-94C7-4111-BD55-07A89549EBD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BAF6DDB-94C7-4111-BD55-07A89549EBD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BAF6DDB-94C7-4111-BD55-07A89549EBD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {20404727-4DE9-4C7D-BCF8-C7BB154ECB16}
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.Common.6.0.1304.0\lib\NET45;packages\EnterpriseLibrary.Data.6.0.1304.0\lib\NET45
 	EndGlobalSection
 EndGlobal

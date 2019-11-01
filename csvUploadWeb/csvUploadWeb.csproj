@@ -217,6 +217,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="favicon %281%29.ico" />
     <Content Include="Images\ajax-loader.gif" />
     <Content Include="Images\alert.png" />
     <Content Include="Images\info.jpg" />
@@ -229,6 +230,7 @@
     <Content Include="Images\warning.png" />
     <Content Include="instructions.html" />
     <Content Include="Log.txt" />
+    <Content Include="Pages\Log.txt" />
     <Content Include="Scripts\app.css" />
     <Content Include="App.config" />
     <Content Include="Properties\webjobs-list.json" />
@@ -697,6 +699,9 @@
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>favicon %281%29.ico</ApplicationIcon>
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
@@ -708,7 +713,9 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>55658</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:55658/</IISUrl>
+          <IISUrl>http://localhost:44325/</IISUrl>
+          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
+          <IISAppRootUrl>http://localhost:44325/</IISAppRootUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="6da02fc3-ec86-4e59-8551-d7d4dc2253bd" solutionId="6da02fc3-ec86-4e59-8551-d7d4dc2253bd" resetWebServer="false" sharePointProductVersion="15.0" name="csvUploader" xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel">
+  <features>
+    <featureReference itemId="f47611a3-d11a-4e78-ba2e-22ffd4dd53ef" />
+  </features>
+</package>

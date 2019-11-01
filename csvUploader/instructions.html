@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>CSV  File Instructions</title>
+    <link href="Scripts/app.css" rel="stylesheet" />
+</head>
+<body>
+
+    <h1>Instructions</h1>
+    <p>The CSV file must follow the following configurations</p>
+    <ol id="listInstructions">
+
+        <li><b>This new CSV file upload process</b> uses a data map for mapping list fields to CSV file fields.  This ensures accuracy, but inconsistent naming may need to be addressed.  Currently ITL is supported but more lists will be added.</li>
+        <li><a href="https://kineticsys.sharepoint.com/sites/projects/construction/SPP/000000000/Lists/Test%20Document%20Libraries/main.aspx?viewid=ad6bc77c%2Dafc8%2D47d2%2D96e1%2D8df38e233902" target="_blank"><b>Sample Default List</b></a> - CSV Field must match List Fields</li>
+        <li><a href="https://kineticsys.sharepoint.com/sites/IntranetPortal/adm/ETL/documents/IT.csv" target="_blank"><b>Sample CSV File Template</b></a>&nbsp; - recomended to start with since all fields are accurate </li>
+        <li>
+            These fields types are <b>not</b> updatable and invalid in the CSV file:
+            <ul>
+                <li>Calculated Fields</li>
+                <li>Other fields included in lookup (other than primary lookup field)</li>
+                <li>System Fields (Modified, Created, Modified By, Created By etc.)</li>
+            </ul>
+        </li>
+        <li><b>Date Fields</b> - should follow the dd/mm/yyyy format (e.g. 5/1/2019)</li>
+        <li><b>CSV Values</b> - must match the target list field type.  For example, an alpha character in an integer field will throw an error. </li>
+        <li><b>CSV Field Order</b> - is important.  Empty fields should stil be included in CSV File</li>
+        <li><b>Different Fields</b> - List column names can be different accross projects (e.g. Vessel or Vessel_or_Location, Due Date or DueDate). List fields <b>must</b> conform to the standard list fields.
+        <li>To <b>Add or Change a Field</b> -  Please Email a request to helpdesk@kinetics.net and include site URL, list name, new field name and type)</li>
+        <li><b>Extra columns</b> in the CSV file (not in the data map) will be ignored. </li>
+
+        <li><b>Lookup Fields</b> source tables should not be empty.  For example, updating the field "Area-Task-Name(from C.C. List)" requires the value be in the Cost Code List".
+        <li><b>Leading or trailing spaces</b> - While most is managed progromatically its important to check your data before  </li>
+    </ol>
+</body>
+</html>
+
+

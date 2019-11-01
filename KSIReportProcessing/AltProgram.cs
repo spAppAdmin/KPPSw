@@ -163,7 +163,7 @@ namespace uploadCSV
 
             foreach (var item in AO.Values)
             {
-                int EID = 0;
+    AssemblyLoadEventArgs   swssssssssssssssssssssswwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww            int EID = 0;
                 if (item.Name != "" && item.Value == "")
                 { EID = SPA.getListItemID(list, item.Name, AO.PrimaryKey.TrueName, ctx); }
                 else if (item.Name != "" && item.Value != "")
@@ -257,7 +257,7 @@ namespace uploadCSV
 
                     if (args[3].Contains("|") == true)
                     { PrimaryKey = new ColumnName(args[3].Split('|')[0].Trim(), args[3].Split('|')[1]); }
-                    else if (args[3].Trim().Lenagth >= 1)
+                    else if (args[3].Trim().Length >= 1)
                     { PrimaryKey = new ColumnName(args[3].Trim(), ""); }
 
                     if (args.Count > 4)

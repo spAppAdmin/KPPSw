@@ -36,10 +36,14 @@ namespace csvUploadWeb.Pages
     public partial class upload : System.Web.UI.Page
     {
         public static Stopwatch sw;
+        SharePointContextToken contextToken;
+        string accessToken;
+        Uri sharepointUrl;
+        string siteName;
+        string currentUser;
 
         protected void Page_PreInit(object sender, EventArgs e)
         {
-            
             Uri redirectUrl;
             switch (SharePointContextProvider.CheckRedirectionStatus(Context, out redirectUrl))
             {
@@ -126,7 +130,7 @@ namespace csvUploadWeb.Pages
                 
                 //SPL.WriteExceptionToLog(ex);
                 HandleException(this.Page, ex);
-                //SPL.Output.Add("Event => ErrorMessage: " + ex.Message + " ErrorSource: " + ex.Source);
+                SPL.Output.Add("Event => ErrorMessage: " + ex.Message + " ErrorSource: " + ex.Source);
             }
         }
       

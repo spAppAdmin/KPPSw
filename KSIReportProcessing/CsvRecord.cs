@@ -1,4 +1,4 @@
-﻿using System;
+﻿ausing System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +13,6 @@ using CsvHelper.Configuration.Attributes;
 
 namespace ImportListFromCSV
 {
-
     public class CsvRecord
     {
 
@@ -125,9 +124,6 @@ namespace ImportListFromCSV
             Map(m => m.ActualDetailingCost).Name("Actual Detailing Cost").ConvertUsing(NullDecimalParser);
             Map(m => m.DetailingBurnedRatio).Name("Detailing Burned Ratio").ConvertUsing(NullDecimalParser);
 
-
-
-
             Decimal? NullDecimalParser(IReaderRow row)
             {
                 var rawValue = row.GetField(row.Context.CurrentIndex + 1);
@@ -161,8 +157,6 @@ namespace ImportListFromCSV
                 var rawValue = row.GetField(row.Context.CurrentIndex + 1);
                 if (rawValue == "null")
                     return "";
-
-
                 else
                     //  return rawValueTypeConverterOption.Format("M/d/yyyy");
                     return rawValue.ToString();

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+  <Module Name="RootModule">
+    <File Path="upload3.png" Url="upload3.png" ReplaceContent="TRUE" />
+    <File Path="uploadApp.png" Url="uploadApp.png" ReplaceContent="TRUE" />
+  </Module>
+</Elements>

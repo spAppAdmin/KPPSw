@@ -1,6 +1,7 @@
 ﻿body {
     overflow: visible;
-    margin: 10px;
+    margin: 20px;
+    padding:15px;
     font-family: Calibri;
     font-display: auto;
     font-size: 100% !important;
